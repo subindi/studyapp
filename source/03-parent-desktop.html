@@ -1,0 +1,75 @@
+<div id="sprout-pc" aria-label="부모 PC 관리 화면">
+ <aside class="sp-sidebar"><div class="sp-brand">스스로 🌱</div><p>우리 가족 · 부모 모드</p><nav class="sp-menu" aria-label="주 메뉴"></nav><div class="sp-sidebar-note">아이의 작은 시작을<br>함께 응원해요.</div></aside>
+ <div class="sp-work"><header class="sp-header"><div><small>우리 가족</small><span class="sp-title">오늘의 가족</span></div><button type="button" class="sp-lock cursor-interaction" data-lock="true">🔒 부모 화면 잠그기</button></header><div class="sp-content"></div></div>
+</div>
+<style>
+#sprout-pc{color-scheme:light dark;--bg:light-dark(#f8f8f0,#1c251f);--fg:light-dark(#263d32,#edf4ef);--sub:light-dark(#637267,#b3c3b7);--panel:light-dark(#fffefb,#28362d);--line:light-dark(#dbe3d8,#46554a);--soft:light-dark(#e8f0e1,#334734);--green:light-dark(#356346,#acd5ae);--on:light-dark(#fff,#1d3421);--warm:light-dark(#f5edd7,#423c29);--warn:light-dark(#735b2c,#e7ca8d);--red:light-dark(#9a3636,#ffbbbb);font:15px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--fg);display:grid;grid-template-columns:190px minmax(0,1fr);min-height:780px;border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+#sprout-pc *{box-sizing:border-box;}
+#sprout-pc .sp-sidebar{background:var(--panel);padding:28px 18px;border-right:1px solid var(--line);}
+#sprout-pc .sp-brand{font-weight:700;letter-spacing:2px;font-size:19px;color:var(--green);}
+#sprout-pc p{color:var(--sub);font-size:14px;margin:8px 0 16px;}
+#sprout-pc small{font-size:12px;color:var(--sub);}
+#sprout-pc h2{font-size:25px;letter-spacing:-.8px;margin:0 0 8px;line-height:1.35;}
+#sprout-pc h3{font-size:18px;margin:8px 0 12px;}
+#sprout-pc button{font:inherit;font-size:14px;background:var(--soft);color:var(--fg);border:0;padding:10px 13px;border-radius:11px;min-height:44px;}
+#sprout-pc button:disabled{opacity:.55;}
+#sprout-pc .sp-main{background:var(--green);color:var(--on);}
+#sprout-pc .sp-menu{display:grid;gap:7px;margin-top:30px;}
+#sprout-pc .sp-menu button{background:transparent;text-align:left;color:var(--sub);}
+#sprout-pc .sp-menu button.sp-active{background:var(--soft);color:var(--green);font-weight:600;}
+#sprout-pc .sp-sidebar-note{font-size:12px;color:var(--sub);margin-top:64px;}
+#sprout-pc .sp-work{min-width:0;}
+#sprout-pc .sp-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:24px 30px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+#sprout-pc .sp-header small{display:block;}
+#sprout-pc .sp-title{font-size:18px;font-weight:600;}
+#sprout-pc .sp-content{padding:28px 30px;}
+#sprout-pc .sp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;}
+#sprout-pc .sp-panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0;min-width:0;}
+#sprout-pc .sp-panel.sp-chosen{border-color:var(--green);}
+#sprout-pc .sp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+#sprout-pc .sp-tag{font-size:12px;padding:4px 8px;border-radius:8px;background:var(--soft);color:var(--green);}
+#sprout-pc .sp-progress{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin:14px 0;}
+#sprout-pc .sp-progress>div{height:100%;background:var(--green);}
+#sprout-pc .sp-detail-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;}
+#sprout-pc .sp-task{display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:13px 0;min-height:55px;}
+#sprout-pc .sp-task span{flex:1;min-width:0;overflow-wrap:anywhere;}
+#sprout-pc .sp-task input{width:20px;height:20px;accent-color:var(--green);flex:none;}
+#sprout-pc .sp-task small{display:block;}
+#sprout-pc .sp-tip{background:var(--soft);border-radius:13px;padding:14px;margin:14px 0;font-size:14px;}
+#sprout-pc .sp-warm{background:var(--warm);color:var(--warn);}
+#sprout-pc .sp-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
+#sprout-pc .sp-tabs button.sp-active{background:var(--green);color:var(--on);}
+#sprout-pc .sp-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+#sprout-pc label.sp-label{display:block;font-size:14px;margin:14px 0 7px;}
+#sprout-pc input:not([type=checkbox]),#sprout-pc select{width:100%;font:inherit;font-size:16px;padding:11px;min-height:46px;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:10px;}
+#sprout-pc .sp-week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;}
+#sprout-pc .sp-week>div{background:var(--soft);padding:12px 4px;border-radius:9px;font-size:12px;}
+#sprout-pc .sp-week strong{display:block;font-size:18px;}
+#sprout-pc .sp-lock-screen{max-width:380px;margin:45px auto;}
+#sprout-pc .sp-error{color:var(--red);margin-top:12px;}
+#sprout-pc .sp-wide-button{display:block;width:100%;margin-top:16px;}
+@media(max-width:850px){#sprout-pc{grid-template-columns:155px minmax(0,1fr);}#sprout-pc .sp-content{padding:22px;}#sprout-pc .sp-header{padding:20px 22px;}#sprout-pc .sp-detail-grid{grid-template-columns:1fr;}}
+@media(max-width:640px){#sprout-pc{grid-template-columns:1fr;}#sprout-pc .sp-sidebar{border-right:0;border-bottom:1px solid var(--line);padding:18px;}#sprout-pc .sp-sidebar p,#sprout-pc .sp-sidebar-note{display:none;}#sprout-pc .sp-menu{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}#sprout-pc .sp-menu button{flex:1;text-align:center;padding:9px;}#sprout-pc .sp-grid,#sprout-pc .sp-form-grid{grid-template-columns:1fr;}#sprout-pc .sp-content{padding:18px;}#sprout-pc .sp-header{padding:18px;}#sprout-pc .sp-lock{font-size:12px;}}
+</style>
+<script>
+(()=>{
+const root=document.getElementById('sprout-pc'),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const b=(t,a='',cls='')=>`<button type="button" class="cursor-interaction ${cls}" ${a}>${t}</button>`;
+const children={young:{name:'승윤',level:'내가 골라요',reward:40,approved:false,tasks:[['한글책 읽기','3권',true],['수학 문제집','2장',true],['한글 공부','3장',true],['영어 영상 보기','1편',true]]},older:{name:'시윤',level:'내가 계획해요',reward:40,approved:false,tasks:[['최상위 수학','20분',true],['사고력 수학','10분',true],['책 읽기','150쪽',false],['집중듣기','30분',false],['영어책 읽기','40분',false],['흘려듣기','30분',false],['글쓰기','1장',false]]}};
+Object.values(children).forEach(c=>c.routines=c.tasks.map(t=>[...t]));
+const state={page:'today',selected:'young',locked:false,error:'',help:true,message:'',editing:null};
+const names={today:'오늘의 가족',routines:'반복 할 일',report:'주간 성장',settings:'아이 설정'};
+function picker(){return `<div class="sp-tabs">${Object.entries(children).map(([k,c])=>b(c.name,`data-child="${k}" aria-pressed="${state.selected===k}"`,state.selected===k?'sp-active':'')).join('')}</div>`;}
+function render(){const c=children[state.selected],n=c.tasks.filter(t=>t[2]).length;root.querySelector('.sp-title').textContent=state.locked?'부모 화면 잠김':names[state.page];root.querySelector('.sp-lock').hidden=state.locked;root.querySelector('.sp-menu').innerHTML=Object.entries(names).map(([k,v])=>b(v,`data-nav="${k}" ${state.locked?'disabled':''}`,state.page===k?'sp-active':'')).join('');let h='';
+if(state.locked){h=`<div class="sp-lock-screen"><h2>부모 화면이 잠겼어요</h2><p>다시 확인하려면 부모 PIN을 입력해 주세요.</p><form data-form="unlock"><label class="sp-label" for="pc-pin">숫자 4자리</label><input id="pc-pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required><button type="submit" class="sp-main sp-wide-button cursor-interaction">부모 화면 열기</button></form>${state.error?`<div class="sp-error" role="alert">${state.error}</div>`:''}<div class="sp-tip">시안 체험용 PIN · 1234</div></div>`;}
+else if(state.page==='today'){h=`<small>10월 7일 수요일 · 화면 예시</small><h2>오늘의 작은 시작을 함께 확인해요</h2><p>아이별 진행 상황을 보고, 필요한 순간에만 도와주세요.</p><div class="sp-grid">${Object.entries(children).map(([k,ch])=>{const num=ch.tasks.filter(t=>t[2]).length;return `<div class="sp-panel ${state.selected===k?'sp-chosen':''}"><div class="sp-row"><h3>${ch.name}</h3><span class="sp-tag">${ch.approved?'자유시간 열림':num===ch.tasks.length?'확인 대기':'진행 중'}</span></div><small>${ch.level}</small><div class="sp-progress"><div style="width:${num/ch.tasks.length*100}%"></div></div><div class="sp-row"><span>${num} / ${ch.tasks.length} 완료</span>${b('상세 보기',`data-child="${k}"`)}</div></div>`;}).join('')}</div><div class="sp-detail-grid"><div class="sp-panel"><div class="sp-row"><h3>${c.name}의 오늘</h3><span class="sp-tag">${n} / ${c.tasks.length}</span></div>${c.tasks.map((t,i)=>`<label class="sp-task"><input type="checkbox" data-task="${i}" ${t[2]?'checked':''}><span>${t[0]}<small>${t[1]} · 필수</small></span><small>${t[2]?'완료':'남음'}</small></label>`).join('')}<small>이 시안에서는 체크를 바꿔 완료 전후 상태를 확인할 수 있어요.</small></div><div><div class="sp-panel"><h3>오늘의 자유시간</h3><p>필수 할 일을 모두 마치고 부모 확인</p><div class="sp-row"><strong>${c.reward}분</strong><span class="sp-tag">${c.approved?'열림':'잠김'}</span></div>${b(c.approved?'확인 완료':`확인했어요 · ${c.reward}분 열어주기`,'data-approve="true" '+(n!==c.tasks.length||c.approved?'disabled':''),'sp-main sp-wide-button')}${state.message?`<div class="sp-tip" role="status">${esc(state.message)}</div>`:''}</div>${state.help?`<div class="sp-tip sp-warm"><strong>🙋 시윤의 도움 요청</strong><p>최상위 수학 · 문제가 이해되지 않아요</p>${b('요청 확인','data-help="open"')}</div>`:''}${state.helpOpen?`<div class="sp-panel"><h3>시윤과 함께 확인해요</h3><p>문제를 천천히 한 번 읽어본 뒤 도움을 요청했어요.</p>${b('함께 확인했어요','data-help="resolve"')}</div>`:''}</div></div>`;}
+else if(state.page==='routines'){h=`<h2>매일 입력하지 않는 할 일 관리</h2><p>반복 일정 변경은 다음 생성일부터 적용됩니다.</p>${picker()}<div class="sp-panel">${c.routines.map((t,i)=>`<div class="sp-task"><span>${t[0]}<small>${t[1]} · 월–금 반복 · 필수</small></span>${b('수정',`data-edit="${i}"`)}</div>`).join('')}</div>${state.editing!==null?`<div class="sp-panel"><h3>반복 할 일 수정</h3><form data-form="routine"><div class="sp-form-grid"><div><label class="sp-label" for="pc-title">할 일 이름</label><input id="pc-title" name="title" value="${esc(c.routines[state.editing][0])}" required maxlength="60"></div><div><label class="sp-label" for="pc-amount">분량</label><input id="pc-amount" name="amount" value="${esc(c.routines[state.editing][1])}" required maxlength="60"></div></div><button type="submit" class="sp-main sp-wide-button cursor-interaction">반복 일정 저장</button></form></div>`:''}${state.message?`<div class="sp-tip" role="status">${esc(state.message)}</div>`:''}`;}
+else if(state.page==='report'){h=`<small>성장 리포트 · 예시 기록</small><h2>지난주보다 나를 더 알아가는 시간</h2><p>9월 28일–10월 4일</p>${picker()}<div class="sp-panel"><h3>${c.name}의 이번 주 약속</h3><div class="sp-week">${['월','화','수','목','금','토','일'].map((v,i)=>`<div>${v}<strong>${['✓','✓','○','✓','✓','–','–'][i]}</strong></div>`).join('')}</div><p>✓ 필수 완료 · ○ 일부 남음 · – 등록된 필수 없음</p></div><div class="sp-grid"><div class="sp-panel"><h3>내 계획을 세운 날 4일</h3><p>아이가 순서를 정하고 실행했어요.</p></div><div class="sp-panel"><h3>스스로 시작했다고 남긴 날 3일</h3><p>아이·부모 확인 기록을 사용해요.</p></div></div><div class="sp-tip">수요일에는 어렵다고 남겼어요. 다음 주 할 일 분량을 함께 조정해 볼까요?</div><p>형제의 점수를 비교하거나 순위를 매기지 않아요.</p>`;}
+else if(state.page==='settings'){h=`<h2>아이에게 맞는 자율권과 자유시간</h2>${picker()}<div class="sp-panel"><form data-form="settings"><label class="sp-label" for="pc-level">자기주도 단계</label><select id="pc-level" name="level"><option ${c.level==='내가 골라요'?'selected':''}>내가 골라요</option><option ${c.level==='내가 계획해요'?'selected':''}>내가 계획해요</option></select><label class="sp-label" for="pc-reward">평일 자유시간 (분)</label><input id="pc-reward" name="reward" type="number" min="1" max="180" value="${c.reward}" required><button type="submit" class="sp-main sp-wide-button cursor-interaction">아이 설정 저장</button></form>${state.message?`<div class="sp-tip" role="status">${esc(state.message)}</div>`:''}</div><div class="sp-tip">실제 앱의 설정 변경은 부모 계정 권한을 확인한 뒤 저장됩니다.</div>`;}
+root.querySelector('.sp-content').innerHTML=h;}
+root.addEventListener('click',e=>{const btn=e.target.closest('button');if(!btn||btn.disabled)return;const d=btn.dataset;if(d.lock){state.locked=true;state.error='';}if(!state.locked){if(d.nav){state.page=d.nav;state.editing=null;state.message='';}if(d.child){state.selected=d.child;state.editing=null;state.message='';}if(d.approve){const c=children[state.selected];if(c.tasks.every(t=>t[2])){c.approved=true;state.message=c.name+'의 자유시간을 열어줬어요.';}}if(d.edit!==undefined)state.editing=Number(d.edit);if(d.help==='open')state.helpOpen=true;if(d.help==='resolve'){state.help=false;state.helpOpen=false;}}render();});
+root.addEventListener('change',e=>{if(state.locked)return;if(e.target.dataset.task!==undefined){const c=children[state.selected];c.tasks[Number(e.target.dataset.task)][2]=e.target.checked;if(!c.tasks.every(t=>t[2])){c.approved=false;state.message='완료 조건을 다시 확인해 주세요. 아직 사용하지 않은 자유시간은 잠겨요.';}else state.message='';render();}});
+root.addEventListener('submit',e=>{e.preventDefault();const form=e.target,f=new FormData(form),c=children[state.selected];if(form.dataset.form==='unlock'){if(String(f.get('pin'))==='1234'){state.locked=false;state.error='';}else state.error='PIN이 맞지 않아요. 다시 확인해 주세요.';}else if(!state.locked&&form.dataset.form==='routine'){c.routines[state.editing][0]=String(f.get('title')).trim();c.routines[state.editing][1]=String(f.get('amount')).trim();state.editing=null;state.message='반복 일정 변경을 저장했어요.';}else if(!state.locked&&form.dataset.form==='settings'){c.reward=Number(f.get('reward'));c.level=String(f.get('level'));state.message='아이 설정을 저장했어요.';}render();});
+render();
+})();
+</script>
