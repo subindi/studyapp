@@ -8,8 +8,9 @@ import {
 } from '../policy';
 import { ErrorText, Header, OfflineNotice, ProgressBar, Ring, TaskRow, useNow, useOnline, useWide } from './common';
 import { DragGhost, SlideToConfirm, SortableList, useDragToZone } from './drag';
-import { SkinHero, themeOf, useThemeOnPage, type Scene } from './skin';
+import { Mascot, SkinHero, themeOf, useThemeOnPage, type Scene } from './skin';
 import { useSound } from './sound';
+import { MissionProgress, MissionRow, ThemeScene, type MissionState } from './themed';
 
 type Page = 'today' | 'plan' | 'focus' | 'help' | 'hint' | 'asked' | 'finish' | 'done' | 'waiting' | 'free' | 'review' | 'growth';
 
@@ -202,12 +203,12 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
 
   const nav = (
     <nav className="nav" aria-label="아이 메뉴">
-      {([['today', '오늘'], ['free', '자유시간'], ['growth', '나의 성장']] as const).map(([p, label]) => (
+      {([['today', '오늘', '🏠'], ['free', '자유시간', '🎈'], ['growth', '나의 성장', '🌱']] as const).map(([p, label, icon]) => (
         <button key={p} type="button" aria-current={page === p ? 'page' : undefined} onClick={() => {
           sfx.play('tap');
           if (page === 'focus') void leaveFocus(p);
           else go(p);
-        }}>{label}</button>
+        }}><span className="nav-icon" aria-hidden="true">{icon}</span>{label}</button>
       ))}
     </nav>
   );
@@ -215,6 +216,103 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
   const back = (p: Page = 'today') => <button type="button" className="btn-back" onClick={() => go(p)}>← 돌아가기</button>;
 
   const restDay = view.progress.total === 0;
+
+  // ---------------------------------------------------------------- 카피바라 · 물범 테마 (시안 구성)
+  const currentId = active?.running ? active.id : (tasks.find((t) => t.running)?.id ?? nextTask?.id ?? null);
+  const missionState = (t: Task): MissionState =>
+    !isCounted(t) ? 'closed' : t.status === 'done' ? 'done' : t.id === currentId ? 'current' : 'todo';
+  const dragging = zone.dragging;
+
+  /** 오늘 화면의 주 행동 하나 (기본 화면과 같은 조건) */
+  const mainAction: ReactNode = isFreeOpen(view.free) ? (
+    <button type="button" className="btn-main" onClick={() => go('free')}>{view.free.state === 'available' ? '자유시간 받기' : '자유시간 보기'}</button>
+  ) : allRequiredDone ? (
+    <button type="button" className="btn-main" onClick={() => go('waiting')}>오늘 모두 해냈어요</button>
+  ) : restDay ? (
+    <>
+      {open.length > 0 && <button type="button" className="btn-secondary" onClick={resume}>선택 할 일 해보기 →</button>}
+      <button type="button" className="btn-main" disabled={view.free.requested || busyFlag || pending}
+        onClick={() => void send(() => api.requestFree(me.id))}>{view.free.requested ? '부모님께 요청했어요' : '부모님께 자유시간 요청'}</button>
+    </>
+  ) : me.level >= 2 && !view.planned ? (
+    <button type="button" className="btn-main" onClick={() => go('plan')}>오늘 순서 정하기 →</button>
+  ) : (
+    <button type="button" className="btn-main" onClick={resume}>▶ {tasks.some((t) => t.elapsedSec > 0 || t.status === 'done') ? '이어서 하기' : quest ? '시작하기' : '미션 시작'}</button>
+  );
+
+  const themedToday = (
+    <>
+      <div className="th-sheet-head">
+        <h2><span aria-hidden="true">🌿 </span>{quest ? '오늘의 미션' : '오늘의 미션'}</h2>
+        {view.progress.total > 0 && <MissionProgress done={view.progress.done} total={view.progress.total} quest={quest} />}
+      </div>
+      <p className="sr-only">{dayTitle(view.day)} · {levelName(me.level)}</p>
+      {tasks.length === 0 ? (
+        <div className="th-empty">
+          <Mascot pose="rest" emotion="rest" theme={theme} />
+          <div><strong>오늘은 쉬어가는 날</strong><p>오늘 등록된 할 일이 없어요. 자유시간은 부모님과 정해요.</p></div>
+        </div>
+      ) : (
+        <div className="missions">
+          {tasks.map((t) => (
+            <MissionRow key={t.id} task={t} quest={quest} state={missionState(t)} pending={view.pending.includes(t.id)}
+              handle={isCounted(t) ? zone.handle(t.id) : undefined}
+              detail={t.movedIn ? `${STATUS_LABEL[t.status]} · 어제에서 옮겨 옴` : undefined}
+              onOpen={isCounted(t) ? () => dropAction.current?.tap(t.id) : undefined}
+              onKey={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  dropAction.current?.tap(t.id);
+                }
+              }} />
+          ))}
+        </div>
+      )}
+      {me.level >= 2 && open.length > 1 && !allRequiredDone && (
+        <button type="button" className="btn-quiet th-reorder" onClick={() => go('plan')}>↕ 순서 바꾸기</button>
+      )}
+      {/* 아이콘을 끌어 여기(시작 버튼 자리)에 놓으면 바로 시작 */}
+      <div ref={open.length > 0 && !allRequiredDone ? zone.zoneRef : undefined}
+        className={`th-start${dragging ? ' ready' : ''}${dragging?.over ? ' over' : ''}`}>
+        {dragging ? <div className="th-drop">{dragging.over ? '놓으면 시작해요!' : '여기에 놓으면 시작'}</div> : mainAction}
+      </div>
+      <button type="button" className="th-banner" onClick={() => go('free')}>
+        <span className="th-banner-icon" aria-hidden="true">{isFreeOpen(view.free) ? '🔓' : '🔒'}</span>
+        <span className="th-banner-copy">
+          <strong>자유시간 {view.free.minutes}분</strong>
+          <small>{freeMessage(view.free, view.progress, pending)}</small>
+        </span>
+        <span className="th-banner-go" aria-hidden="true">›</span>
+      </button>
+    </>
+  );
+
+  const themedDone = active && (
+    <>
+      <div className="th-sheet-head center-head">
+        <h2><span aria-hidden="true">⭐ </span>{allRequiredDone ? '오늘의 미션 완료' : `${active.title} 완료`}</h2>
+      </div>
+      <p className="th-lead">
+        {allRequiredDone ? '필수 할 일을 모두 마쳤어요.' : `${active.title} · ${active.amount}, 내가 시작하고 끝냈어요.`}
+        {allRequiredDone && view.free.approvalRequired && !isFreeOpen(view.free) && ' 부모님이 확인하면 자유시간이 열려요.'}
+      </p>
+      {me.level >= 3 && (
+        <div className="th-facts">
+          <div><small>내 예상</small><strong>{active.estimateMin}분</strong></div>
+          <div><small>실제로 쓴 시간</small><strong>{clock(elapsedOf(active))}</strong></div>
+        </div>
+      )}
+      <div className="th-done-progress"><MissionProgress done={view.progress.done} total={view.progress.total} quest={quest} /></div>
+      {view.pending.includes(active.id) && <div className="tip warm">완료 표시는 이 기기에 남겨 두었어요. 연결되면 보낼게요.</div>}
+      <button type="button" className="btn-main" onClick={allRequiredDone ? () => go('waiting') : resume}>{allRequiredDone ? '오늘 할 일 끝!' : '다음 미션으로 →'}</button>
+      <button type="button" className="btn-secondary" onClick={() => go('today')}><span aria-hidden="true">📋 </span>오늘의 기록</button>
+      {active.status === 'done' && active.doneBy === 'child' && !view.pending.includes(active.id) && (
+        <button type="button" className="btn-quiet" disabled={busyFlag} onClick={async () => {
+          if (await send(() => api.undo(me.id, active.id))) go('focus');
+        }}>잘못 눌렀어요 · 다시 할 일로</button>
+      )}
+    </>
+  );
 
   const todayPage = (
     <>
@@ -500,6 +598,36 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
         : page === 'waiting' ? (allRequiredDone ? 'waiting' : 'today')
           : page === 'free' ? (view.free.state === 'used' ? 'ended' : 'free')
             : page;
+
+  const header = (
+    <Header badge={`${me.name} · ${me.age}세`}>{soundButton}<button type="button" className="btn-small" onClick={onSwitch}>바꾸기</button></Header>
+  );
+
+  if (theme !== 'dragon') {
+    const home = page === 'today' || (split && page === 'focus');
+    const variant = home ? 'home' : page === 'done' && active ? 'done' : 'page';
+    let content: ReactNode = body;
+    if (home) {
+      content = split ? (
+        <div className="split">
+          <section aria-label="오늘 할 일">{themedToday}</section>
+          <section aria-label="지금 할 일">{focusPage(page === 'focus' ? active : nextTask, true)}</section>
+        </div>
+      ) : themedToday;
+    } else if (page === 'done' && active) content = themedDone;
+    return (
+      <div className={`app th-app ${quest ? 'quest' : 'planner'}${split ? ' wide' : ''}`}>
+        <ThemeScene theme={theme} variant={variant} scene={scene} call={callName(me.name)} header={header} />
+        <main className="th-sheet">
+          <OfflineNotice online={online} pending={pendingCount} onRetry={() => void refresh()} lastError={loadError} />
+          <ErrorText text={actionError} />
+          {content}
+        </main>
+        {home && nav}
+        <DragGhost drag={zone.dragging}>{dragTask && <>{dragTask.icon} {dragTask.title}</>}</DragGhost>
+      </div>
+    );
+  }
 
   return (
     <div className={`app ${quest ? 'quest' : 'planner'}${split ? ' wide' : ''}`}>
