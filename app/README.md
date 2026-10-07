@@ -81,10 +81,10 @@ cd app/frontend && npm install && npm run dev   # 테스트: npm test
 ## 운영 배포 (포켓 스도쿠와 같은 서버 · 같은 방식)
 
 ```
-[브라우저] ──http:9091──> Spring Boot (API + 화면, ~/sseuro) ──> MySQL 127.0.0.1:3306 / ciat DB
+[브라우저] ──http:9092──> Spring Boot (API + 화면, ~/sseuro) ──> MySQL 127.0.0.1:3306 / ciat DB
 ```
 
-- 서버 203.245.30.73, `ciat` 계정, sudo · Docker 없이. 포켓 스도쿠(9090, `~/poke-sudoku`) 옆에 **9091 · `~/sseuro`** 로 둔다.
+- 서버 203.245.30.73, `ciat` 계정, sudo · Docker 없이. 포켓 스도쿠(9090, `~/poke-sudoku`) 옆에 **9092 · `~/sseuro`** 로 둔다. 9091(초등 공부 앱 kids-study)은 내렸다.
 - Java 는 `~/sseuro/jre` 가 없으면 포켓 스도쿠의 `~/poke-sudoku/jre` (Temurin 17)를 함께 쓴다.
 - 메모리 1GB 서버에서 두 앱이 함께 돌므로 힙 192MB (`app.sh`).
 - DB 는 같은 `ciat` DB. 테이블 · 제약 이름은 모두 `ss_` 접두어, 세션 테이블은 `SS_SESSION`, Flyway 기록은 `sseuro_flyway_history` → 기존 TB_* · 포켓 스도쿠 테이블과 겹치지 않는다.
@@ -101,7 +101,7 @@ chmod 600 ~/sseuro/config/application.yml
 업데이트 (개발 PC, `~/.ssh/poke_deploy` 키):
 
 ```bash
-bash app/deploy/server/deploy.sh      # 빌드 · 테스트 → 올리기 → 재시작 → http://203.245.30.73:9091
+bash app/deploy/server/deploy.sh      # 빌드 · 테스트 → 올리기 → 재시작 → http://203.245.30.73:9092
 ```
 
 되돌리기 (서버): `cd ~/sseuro && ./app.sh stop && mv app.jar.bak app.jar && rm -rf web && mv web.bak web && ./app.sh start`

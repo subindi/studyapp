@@ -9,7 +9,7 @@
 #   Java 17: ~/sseuro/jre 가 있으면 그것, 없으면 포켓 스도쿠의 ~/poke-sudoku/jre 를 함께 쓴다
 set -euo pipefail
 HOME_DIR="$(cd "$(dirname "$0")" && pwd)"
-PORT="${SSEURO_PORT:-9091}"
+PORT="${SSEURO_PORT:-9092}"
 if [ -x "$HOME_DIR/jre/bin/java" ]; then JAVA="$HOME_DIR/jre/bin/java"; else JAVA="$HOME/poke-sudoku/jre/bin/java"; fi
 PID_FILE="$HOME_DIR/app.pid"
 # 메모리 1GB 서버에서 포켓 스도쿠(힙 256MB)와 함께 돌아가므로 더 작게: 힙 192MB

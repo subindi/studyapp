@@ -1,7 +1,7 @@
 # ~/sseuro/config/application.yml (이 파일을 복사해 값을 채우고 chmod 600)
-# Spring Boot 하나로 화면(web/) + API 를 9091 번에서 서비스한다 (nginx · sudo 없이, 9090 은 포켓 스도쿠)
+# Spring Boot 하나로 화면(web/) + API 를 9092 번에서 서비스한다 (nginx · sudo 없이, 9090 포켓 스도쿠 · 9091 은 사용 안 함)
 server:
-  port: 9091
+  port: 9092
   servlet:
     session:
       cookie:

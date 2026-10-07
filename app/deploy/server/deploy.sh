@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # 개발 PC 에서 실행: 빌드 · 테스트 → 서버(203.245.30.73, ciat)에 올리기 → 재시작
 #   bash app/deploy/server/deploy.sh
-# 포켓 스도쿠와 같은 서버 · 같은 접속 키(~/.ssh/poke_deploy)를 쓴다. 서버 폴더는 ~/sseuro, 포트 9091
+# 포켓 스도쿠와 같은 서버 · 같은 접속 키(~/.ssh/poke_deploy)를 쓴다. 서버 폴더는 ~/sseuro, 포트 9092
 set -euo pipefail
 cd "$(dirname "$0")/../.."   # app/
 HOST="ciat@203.245.30.73"
-PORT=9091
+PORT=9092
 K=(-i "$HOME/.ssh/poke_deploy" -o BatchMode=yes)
 
 echo "▶ 화면 빌드"
