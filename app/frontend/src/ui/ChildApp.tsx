@@ -10,7 +10,7 @@ import { ErrorText, Header, OfflineNotice, ProgressBar, Ring, TaskRow, useNow, u
 import { DragGhost, SlideToConfirm, SortableList, useDragToZone } from './drag';
 import { Mascot, SkinHero, themeOf, useThemeOnPage, type Scene } from './skin';
 import { useSound } from './sound';
-import { MissionProgress, MissionRow, ThemeScene, type MissionState } from './themed';
+import { ConceptScene, MissionProgress, MissionRow, ThemeScene, rewardShot, usesConceptShot, type MissionState } from './themed';
 
 type Page = 'today' | 'plan' | 'focus' | 'help' | 'hint' | 'asked' | 'finish' | 'done' | 'waiting' | 'free' | 'review' | 'growth';
 
@@ -296,6 +296,7 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
         {allRequiredDone ? '필수 할 일을 모두 마쳤어요.' : `${active.title} · ${active.amount}, 내가 시작하고 끝냈어요.`}
         {allRequiredDone && view.free.approvalRequired && !isFreeOpen(view.free) && ' 부모님이 확인하면 자유시간이 열려요.'}
       </p>
+      {theme !== 'dragon' && <img className="th-reward" src={rewardShot(theme)} alt="" />}
       {me.level >= 3 && (
         <div className="th-facts">
           <div><small>내 예상</small><strong>{active.estimateMin}분</strong></div>
@@ -617,7 +618,11 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
     } else if (page === 'done' && active) content = themedDone;
     return (
       <div className={`app th-app ${quest ? 'quest' : 'planner'}${split ? ' wide' : ''}`}>
-        <ThemeScene theme={theme} variant={variant} scene={scene} call={callName(me.name)} header={header} />
+        {variant !== 'page' && !split && usesConceptShot(theme, me.name) ? (
+          <ConceptScene theme={theme} variant={variant} call={callName(me.name)} name={me.name} sound={sfx} onSwitch={onSwitch} />
+        ) : (
+          <ThemeScene theme={theme} variant={variant} scene={scene} call={callName(me.name)} header={header} />
+        )}
         <main className="th-sheet">
           <OfflineNotice online={online} pending={pendingCount} onRetry={() => void refresh()} lastError={loadError} />
           <ErrorText text={actionError} />

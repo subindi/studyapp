@@ -126,3 +126,24 @@
   .m-quest.current { border-color: #5c8a5a; }
   .m-plan.current { border-color: #3f6580; }
 }
+
+/* ---------------------------------------------------------------- 시안 그림을 그대로 쓰는 장면 (ConceptScene)
+ * 오늘 · 완료 위쪽은 승인 시안에서 잘라 낸 그림. 프로필 칸 자리에 '바꾸기', 그 왼쪽에 효과음 버튼을 겹친다 */
+.th-top.th-shot-wrap { padding: 0; background: none; line-height: 0; }
+.th-shot { display: block; width: 100%; height: auto; }
+.th-hit { position: absolute; min-height: 0; padding: 0; border: 0; border-radius: 999px; background: transparent; }
+.th-hit:focus-visible, .th-sound:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.th-sound { position: absolute; width: 40px; height: 40px; min-height: 40px; padding: 0; border-radius: 50%; background: #ffffffe8; color: #253d36; font-size: 18px; line-height: 1; box-shadow: 0 2px 8px #0000001a; }
+.th-sound[aria-pressed='false'] { opacity: .8; }
+.th-shot-wrap + .th-sheet { margin-top: -26px; }
+.th-reward { display: block; width: min(100%, 300px); margin: 4px auto 10px; border-radius: 18px; }
+/* 그 밖의 장면 배경도 시안 그림의 글자 없는 부분 */
+.th-top[data-set=capybara]:not(.th-shot-wrap) { background-image: url('./skin/themes/concept/capybara-scenery.jpg'); background-size: cover; background-position: center 60%; }
+.th-top[data-set=seal]:not(.th-shot-wrap) { background-image: url('./skin/themes/concept/seal-scenery.jpg'); background-size: cover; background-position: center 40%; }
+/* 카피바라 미션 아이콘은 시안처럼 색 있는 그림 (기기 기본 컬러 이모지) */
+.m-quest .mission-icon { font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif !important; }
+@media (prefers-color-scheme: dark) {
+  .th-top:not(.th-shot-wrap) { background-blend-mode: normal; }
+  .th-reward { opacity: .92; }
+}
+.th-sheet-head h2 > span[aria-hidden], .th-sheet .btn-secondary > span[aria-hidden] { font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif !important; }

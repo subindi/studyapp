@@ -1,7 +1,13 @@
-// 카피바라 · 물범 테마 화면 틀 (design-handoff/*/images/approved-concept.png 구성)
+// 카피바라 · 물범 테마 화면 틀 (각 design-handoff 폴더의 approved-concept.png 구성)
 // 위: 배경 장면(캐릭터 · 인사말 · 말풍선) / 아래: 장면 위로 겹쳐 올라오는 흰 시트 / 맨 아래: 고정 탭.
 // 장면의 그림 · 말풍선은 장식(aria-hidden)이고, 상태 · 버튼 · 미션은 시트 안의 실제 글자다.
-import type { KeyboardEvent, ReactNode } from 'react';
+import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';
+import capybaraHome from '../skin/themes/concept/capybara-home.jpg';
+import capybaraDone from '../skin/themes/concept/capybara-done.jpg';
+import capybaraReward from '../skin/themes/concept/capybara-reward.jpg';
+import sealHome from '../skin/themes/concept/seal-home.jpg';
+import sealDone from '../skin/themes/concept/seal-done.jpg';
+import sealReward from '../skin/themes/concept/seal-reward.jpg';
 import type { Task } from '../sync/api';
 import { STATUS_LABEL } from '../policy';
 import type { HandleProps } from './drag';
@@ -14,6 +20,52 @@ const COPY: Record<Shown, { greeting: (call: string) => string; sub: string; don
   capybara: { greeting: (c) => `${c},\n같이 해보자!`, sub: '하나씩 천천히', done: (c) => `${c},\n멋지게 해냈어!` },
   seal: { greeting: (c) => `${c},\n만나서 반가워!`, sub: '오늘도 같이 해보자!', done: (c) => `${c}, 해냈어!` },
 };
+
+/**
+ * 승인된 시안 그림을 그대로 쓰는 장면 (각 design-handoff 폴더의 images/approved-concept.png 에서 잘라 냄).
+ * 그림 안에 프로필 이름 · 인사말이 그려져 있으므로, 그 이름의 아이일 때만 쓴다 (다른 아이는 아래 조립형 장면).
+ * chip: 그림 속 프로필 칸 위치(%) — 그 자리에 '바꾸기' 버튼을 투명하게 겹친다.
+ */
+const SHOTS: Record<Shown, { owner: string; home: string; done: string; reward: string; chip: { home: Box; done: Box } }> = {
+  capybara: { owner: '승윤', home: capybaraHome, done: capybaraDone, reward: capybaraReward,
+    chip: { home: [66.5, 3.3, 30, 12.8], done: [67.2, 2.9, 29.7, 10] } },
+  seal: { owner: '시윤', home: sealHome, done: sealDone, reward: sealReward,
+    chip: { home: [67.4, 3.2, 27.5, 12.7], done: [68.5, 2.9, 27, 10.8] } },
+};
+type Box = [left: number, top: number, width: number, height: number];
+
+export function usesConceptShot(theme: Theme, name: string): theme is Shown {
+  return theme !== 'dragon' && name.includes(SHOTS[theme].owner);
+}
+
+export function rewardShot(theme: Shown): string {
+  return SHOTS[theme].reward;
+}
+
+/** 시안 그림 장면 (오늘 · 완료). 그림은 장식이고 같은 뜻의 글자를 따로 둔다 */
+export function ConceptScene({ theme, variant, call, name, sound, onSwitch }: {
+  theme: Shown;
+  variant: 'home' | 'done';
+  call: string;
+  name: string;
+  sound: { on: boolean; toggle: () => void };
+  onSwitch: () => void;
+}) {
+  const shot = SHOTS[theme];
+  const [l, t, w, h] = shot.chip[variant];
+  const chip: CSSProperties = { left: `${l}%`, top: `${t}%`, width: `${w}%`, height: `${h}%` };
+  const c = COPY[theme];
+  return (
+    <div className={`th-top th-shot-wrap th-${variant}`} data-set={theme}>
+      <img className="th-shot" src={variant === 'home' ? shot.home : shot.done} alt="" />
+      <h1 className="sr-only">{(variant === 'home' ? c.greeting(call) : c.done(call)).replace('\n', ' ')}</h1>
+      <button type="button" className="th-hit" style={chip} onClick={onSwitch} aria-label={`${name} · 다른 사람으로 바꾸기`} title="바꾸기" />
+      <button type="button" className="th-sound" style={{ left: `calc(${l}% - 50px)`, top: `calc(${t + h / 2}% - 20px)` }}
+        aria-pressed={sound.on} aria-label={sound.on ? '효과음 끄기' : '효과음 켜기'} title={sound.on ? '효과음 끄기' : '효과음 켜기'}
+        onClick={sound.toggle}>{sound.on ? '🔊' : '🔇'}</button>
+    </div>
+  );
+}
 
 /**
  * 장면. variant
