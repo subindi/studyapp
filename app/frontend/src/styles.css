@@ -186,3 +186,30 @@ textarea { resize: vertical; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
+
+/* ---------------------------------------------------------------- 끌기 (아이 화면) */
+.grip { cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; position: relative; }
+.grip:active { cursor: grabbing; }
+.grip::after { content: '⠿'; position: absolute; right: -6px; bottom: -6px; font-size: 11px; color: var(--muted); background: var(--bg); border-radius: 6px; padding: 0 2px; line-height: 1.2; }
+.sortable .sort-item { transition: transform .18s ease; position: relative; }
+.sortable .sort-item.dragging .task { box-shadow: 0 12px 28px #243e3226; border-color: var(--accent); background: var(--panel); }
+.drop-zone { border: 2px dashed var(--accent); border-radius: 20px; padding: 18px 14px; text-align: center; margin: 16px 0; color: var(--accent); background: transparent; transition: background .15s, transform .15s; }
+.drop-zone strong { display: block; font-size: 17px; }
+.drop-zone small { color: var(--muted); }
+.drop-zone.ready { background: var(--soft); }
+.drop-zone.over { background: var(--accent); color: var(--on); transform: scale(1.03); }
+.drop-zone.over small { color: var(--on); }
+.drag-ghost { position: fixed; z-index: 50; pointer-events: none; transform: translate(-50%, -60%) rotate(-3deg); background: var(--panel); border: 2px solid var(--accent); border-radius: 16px; padding: 10px 14px; box-shadow: 0 16px 34px #243e3233; font-weight: 600; white-space: nowrap; max-width: 80vw; overflow: hidden; text-overflow: ellipsis; }
+.drag-ghost.over { transform: translate(-50%, -60%) scale(1.08); }
+.slide { position: relative; height: 66px; border-radius: 33px; background: var(--soft); margin: 18px 0 8px; overflow: hidden; user-select: none; -webkit-user-select: none; }
+.slide.warm { background: var(--warm); }
+.slide.disabled { opacity: .5; }
+.slide-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 33px; background: var(--accent); opacity: .22; transition: width .25s ease; }
+.slide.warm .slide-fill { background: var(--warn); }
+.slide-label { position: absolute; inset: 0; display: grid; place-items: center; padding-left: 60px; font-weight: 600; color: var(--accent); pointer-events: none; }
+.slide.warm .slide-label { color: var(--warn); }
+.slide-knob { position: absolute; left: 4px; top: 4px; width: 58px; height: 58px; min-height: 58px; border-radius: 50%; padding: 0; background: var(--accent); color: var(--on); font-size: 24px; font-weight: 700; touch-action: none; cursor: grab; transition: transform .25s ease; box-shadow: 0 4px 12px #243e3230; }
+.slide.warm .slide-knob { background: var(--warn); color: var(--bg); }
+.slide.hint .slide-knob { animation: nudge .6s ease; }
+@keyframes nudge { 0%, 100% { transform: translateX(0); } 40% { transform: translateX(26px); } }
+@media (prefers-reduced-motion: reduce) { .slide.hint .slide-knob { animation: none; } }

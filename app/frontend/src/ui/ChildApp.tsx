@@ -7,6 +7,7 @@ import {
   moodLabel, shownElapsed, shownRemaining, subjectName, withPending,
 } from '../policy';
 import { ErrorText, Header, OfflineNotice, ProgressBar, Ring, TaskRow, useNow, useOnline, useWide } from './common';
+import { DragGhost, SlideToConfirm, SortableList, useDragToZone } from './drag';
 
 type Page = 'today' | 'plan' | 'focus' | 'help' | 'hint' | 'asked' | 'finish' | 'done' | 'waiting' | 'free' | 'review' | 'growth';
 
@@ -82,6 +83,13 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
 
   const view = useMemo(() => (raw ? withPending(raw, pendingIds) : null), [raw, pendingIds]);
 
+  /** 할 일을 '여기에 놓기' 칸에 끌어다 놓으면 바로 시작 · 아이콘을 톡 누르면 열기 (아래에서 채움) */
+  const dropAction = useRef<{ drop: (id: number) => void; tap: (id: number) => void } | null>(null);
+  const zone = useDragToZone(
+    useCallback((id: number) => dropAction.current?.drop(id), []),
+    useCallback((id: number) => dropAction.current?.tap(id), []),
+  );
+
   /** 서버 동작 하나 (중복 클릭 방지). offline: 인터넷이 없을 때 기기에 남길 수 있는 동작이면 그 방법 */
   const send = useCallback(async (fn: () => Promise<DayView>, offline?: () => void): Promise<boolean> => {
     if (busy.current) return false;
@@ -146,6 +154,23 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
     if (active?.running) await send(() => api.pause(me.id, active.id));
     go(p);
   };
+  dropAction.current = {
+    drop: (id) => {
+      const t = tasks.find((x) => x.id === id);
+      if (!t || !isCounted(t) || t.status === 'done') return;
+      setActiveId(id);
+      go('focus');
+      if (online && !t.running) void send(() => api.start(me.id, id));
+    },
+    tap: (id) => {
+      const t = tasks.find((x) => x.id === id);
+      if (!t || !isCounted(t)) return;
+      setActiveId(id);
+      go(t.status === 'done' ? 'done' : 'focus');
+    },
+  };
+  const dragTask = zone.dragging ? tasks.find((t) => t.id === zone.dragging!.id) ?? null : null;
+
   const ask = async (text: string) => {
     if (!active) return;
     if (await send(() => api.help(me.id, active.id, text))) go('asked');
@@ -189,9 +214,16 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
       ) : (
         <>
           <div className="row"><h3>{quest ? '오늘의 퀘스트' : '오늘의 할 일'}</h3><small>{tasks.filter(isCounted).length}개</small></div>
+          {open.length > 0 && !allRequiredDone && (
+            <div ref={zone.zoneRef} className={`drop-zone${zone.dragging ? ' ready' : ''}${zone.dragging?.over ? ' over' : ''}`}>
+              <strong>{zone.dragging?.over ? '놓으면 시작해요!' : '🎯 여기에 끌어다 놓으면 시작'}</strong>
+              <small>할 일 아이콘을 잡고 이 칸으로 끌어와요 · 톡 누르면 열려요</small>
+            </div>
+          )}
           <div className="list">
             {tasks.map((t) => (
               <TaskRow key={t.id} task={t} pending={view.pending.includes(t.id)} current={wide && page === 'focus' && t.id === activeId}
+                handle={isCounted(t) && t.status !== 'done' ? zone.handle(t.id) : undefined}
                 detail={t.movedIn ? `${STATUS_LABEL[t.status]} · 어제에서 옮겨 옴` : undefined}
                 action={isCounted(t) ? (
                   <button type="button" className="btn-quiet" onClick={() => { setActiveId(t.id); go(t.status === 'done' ? 'done' : 'focus'); }}>
@@ -345,11 +377,11 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
             <div className="large-emoji" aria-hidden="true">🔎</div>
             <h2>한 번만 확인할까?</h2>
             <div className="panel"><h3>{active.title} · {active.amount}</h3><p>내가 정한 분량을 다 했나요?</p></div>
-            <button type="button" className="btn-main" disabled={busyFlag} onClick={async () => {
+            <SlideToConfirm label="밀어서 다 했어요" disabled={busyFlag} onConfirm={async () => {
               const t = active;
               const ok = await send(() => api.complete(me.id, t.id), () => outbox.add({ childId: me.id, kind: 'complete', taskId: t.id }));
               if (ok) go('done');
-            }}>네, 다 했어요!</button>
+            }} />
             <button type="button" className="btn-secondary" onClick={() => go('focus')}>조금 더 할게요</button>
           </div>
         </>
@@ -424,6 +456,7 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
       <OfflineNotice online={online} pending={pendingCount} onRetry={() => void refresh()} lastError={loadError} />
       <ErrorText text={actionError} />
       {body}
+      <DragGhost drag={zone.dragging}>{dragTask && <>{dragTask.icon} {dragTask.title}</>}</DragGhost>
     </div>
   );
 }
@@ -455,11 +488,12 @@ function PlanPage({ view, busy, onBack, onSave }: {
       <button type="button" className="btn-back" onClick={onBack}>← 돌아가기</button>
       <div className="kicker">내가 고르는 순서</div>
       <h2>뭐부터 할까?</h2>
-      <p>화살표로 순서를 바꿔보세요.{me.level >= 3 && ' 예상시간도 내가 정해요.'}</p>
-      <div className="list">
-        {items.map((t, i) => (
-          <div key={t.id}>
-            <TaskRow task={t} detail={`예상 ${est[t.id]}분`} action={
+      <p>아이콘을 잡고 위아래로 끌어 순서를 바꿔요.{me.level >= 3 && ' 예상시간도 내가 정해요.'}</p>
+      <SortableList label="오늘 할 일 순서" items={items} onReorder={setOrder} renderItem={(t, handle) => {
+        const i = order.indexOf(t.id);
+        return (
+          <>
+            <TaskRow task={t} handle={handle} detail={`${i + 1}번째 · 예상 ${est[t.id]}분`} action={
               <div className="move">
                 <button type="button" aria-label={`${t.title} 위로`} disabled={i === 0} onClick={() => move(i, -1)}>↑</button>
                 <button type="button" aria-label={`${t.title} 아래로`} disabled={i === items.length - 1} onClick={() => move(i, 1)}>↓</button>
@@ -473,9 +507,9 @@ function PlanPage({ view, busy, onBack, onSave }: {
                 </select>
               </div>
             )}
-          </div>
-        ))}
-      </div>
+          </>
+        );
+      }} />
       <button type="button" className="btn-main" disabled={busy} onClick={() =>
         onSave(order, me.level >= 3 ? order.map((id) => ({ taskId: id, minutes: est[id] })) : [])}>이 순서로 할래요 →</button>
     </>
@@ -527,7 +561,7 @@ function FreePage({ view, fetchedAt, now, busy, online, onGo, onIssueAndStart, o
         <div className="hero"><span className="clock">{f.minutes}분</span><p>준비되면 시작해 주세요.</p></div>
         <p>무엇을 하며 쉬고 싶나요?</p>
         {choices}
-        <button type="button" className="btn-main" disabled={busy || !online} onClick={() => onIssueAndStart(activity)}>자유시간 시작하기</button>
+        <SlideToConfirm warm label="밀어서 자유시간 시작" disabled={busy || !online} onConfirm={() => onIssueAndStart(activity)} />
         {!online && <p>자유시간은 인터넷이 연결되어 있을 때 시작할 수 있어요.</p>}
       </>
     );

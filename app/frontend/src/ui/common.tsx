@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { errorMessage } from '../sync/api';
 import type { Task } from '../sync/api';
 import { STATUS_LABEL } from '../policy';
+import type { HandleProps } from './drag';
 
 /** 1초마다 다시 그리기 (타이머 표시용. 실제 시간은 서버가 계산) */
 export function useNow(active = true): number {
@@ -108,17 +109,19 @@ export function ProgressBar({ done, total, label = '필수 할 일' }: { done: n
   );
 }
 
-export function TaskRow({ task, detail, action, pending, current }: {
+export function TaskRow({ task, detail, action, pending, current, handle }: {
   task: Task;
   detail?: ReactNode;
   action?: ReactNode;
   pending?: boolean;
   current?: boolean;
+  /** 아이콘을 손잡이로 (끌기) */
+  handle?: HandleProps;
 }) {
   const done = task.status === 'done';
   return (
     <div className={`task${done ? ' done' : ''}${current ? ' current' : ''}`}>
-      <span className="emoji" aria-hidden="true">{done ? '✓' : task.icon}</span>
+      <span aria-hidden="true" {...handle} className={`emoji${handle ? ` ${handle.className}` : ''}`}>{done ? '✓' : task.icon}</span>
       <div className="copy">
         <strong>{task.title}</strong>
         <small>
