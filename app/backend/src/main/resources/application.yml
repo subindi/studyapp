@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: sseuro-api
+  profiles:
+    default: local
+  jpa:
+    hibernate:
+      ddl-auto: none   # 스키마는 Flyway(db/migration)가 관리
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Seoul
+        type:
+          preferred_instant_jdbc_type: TIMESTAMP
+  flyway:
+    enabled: true
+  session:
+    jdbc:
+      initialize-schema: never   # SPRING_SESSION 테이블도 Flyway V1에 포함
+    timeout: 30d
+
+server:
+  port: 8080
+  forward-headers-strategy: framework   # nginx 뒤에서 https/클라이언트 IP 인식
+  servlet:
+    session:
+      timeout: 30d
+      cookie:
+        name: SSID
+        http-only: true
+        same-site: lax
+        max-age: 30d
+  tomcat:
+    max-swallow-size: 256KB
+
+management:
+  endpoints:
+    web:
+      base-path: /api
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+app:
+  # 가족 활동일 기준 시간대 (하루 마감 = 이 시간대의 자정)
+  zone: Asia/Seoul
+  login:
+    max-failures: 10
+    lock-minutes: 15
+  pin:
+    # PIN 을 연속으로 틀리면 잠시 잠근다 (가족 단위, 모든 기기 공통)
+    max-failures: 5
+    lock-minutes: 10
+    # 부모 모드는 마지막 부모 요청 뒤 이 시간이 지나면 다시 잠긴다
+    idle-minutes: 20

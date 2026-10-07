@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+.gradle
+*.tsbuildinfo
+.env
+.env.local
+*.log
+.idea
+app/backend/data
+app/backend/config/

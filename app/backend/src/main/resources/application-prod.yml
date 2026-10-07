@@ -1,0 +1,14 @@
+# 운영: MySQL 8 (값은 모두 환경변수로)
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:mysql}:${DB_PORT:3306}/${DB_NAME:sseuro}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+    username: ${DB_USER:sseuro}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: ${COOKIE_SECURE:true}
