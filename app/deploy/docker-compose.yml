@@ -1,0 +1,52 @@
+# 스스로 운영 배포: web(nginx+화면) → api(Spring Boot) → mysql
+# 사용법은 deploy/README.md 참고. 비밀번호 등은 같은 폴더의 .env 에 둔다 (.env.example 복사)
+name: sseuro
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?.env 에 MYSQL_ROOT_PASSWORD 를 넣어 주세요}
+      MYSQL_DATABASE: sseuro
+      MYSQL_USER: sseuro
+      MYSQL_PASSWORD: ${DB_PASSWORD:?.env 에 DB_PASSWORD 를 넣어 주세요}
+      TZ: Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+09:00
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    # 포트를 밖으로 열지 않는다 (api 컨테이너만 접속)
+
+  api:
+    build: ../backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: mysql
+      DB_NAME: sseuro
+      DB_USER: sseuro
+      DB_PASSWORD: ${DB_PASSWORD}
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+
+  web:
+    build: ../frontend
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-9090}:80"
+
+volumes:
+  mysql-data:

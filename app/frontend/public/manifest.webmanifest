@@ -1,0 +1,16 @@
+{
+  "name": "스스로 · 내가 고르고 해내는 하루",
+  "short_name": "스스로",
+  "description": "아이가 순서를 고르고 계획 · 시작 · 완료 · 회고하는 습관을 만드는 가족 앱",
+  "lang": "ko",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8f8f0",
+  "theme_color": "#356346",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
