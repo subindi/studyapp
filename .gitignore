@@ -9,3 +9,4 @@ build
 .idea
 app/backend/data
 app/backend/config/
+app/data/
