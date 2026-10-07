@@ -221,3 +221,4 @@ textarea { resize: vertical; }
 /* 부모 화면: 할 일 줄의 버튼 · 휴대폰 아래 메뉴 고정 */
 .row-actions { display: flex; gap: 6px; flex: none; }
 .parent-shell .nav.mobile { position: sticky; bottom: 0; z-index: 10; background: var(--bg); margin: 26px -20px 0; padding: 10px 20px max(10px, env(safe-area-inset-bottom)); }
+@media (max-width: 380px) { .parent-shell .nav.mobile { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; } }
