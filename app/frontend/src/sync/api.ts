@@ -189,6 +189,7 @@ export const api = {
   complete: (childId: number, taskId: number) => request<DayView>('POST', `${kid(childId)}/tasks/${taskId}/complete`),
   undo: (childId: number, taskId: number) => request<DayView>('POST', `${kid(childId)}/tasks/${taskId}/undo`),
   help: (childId: number, taskId: number, reason: string) => request<DayView>('POST', `${kid(childId)}/tasks/${taskId}/help`, { reason }),
+  cancelHelp: (childId: number, taskId: number) => request<DayView>('POST', `${kid(childId)}/tasks/${taskId}/help/cancel`),
   issuePass: (childId: number) => request<DayView>('POST', `${kid(childId)}/today/free-pass`),
   startPass: (childId: number, activity: string | null) => request<DayView>('POST', `${kid(childId)}/today/free-pass/start`, { activity }),
   pausePass: (childId: number) => request<DayView>('POST', `${kid(childId)}/today/free-pass/pause`),

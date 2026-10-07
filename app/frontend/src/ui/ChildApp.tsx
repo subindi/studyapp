@@ -295,6 +295,12 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
               </button>
               {!online && <p>타이머는 인터넷이 연결되어 있을 때 기록돼요.</p>}
               <p>쓴 시간 {clock(elapsed)}</p>
+              {t.helpOpen && (
+                <div className="tip warm" role="status">
+                  🙋 부모님께 도움을 요청했어요.
+                  <button type="button" className="btn-secondary" disabled={busyFlag} onClick={() => void send(() => api.cancelHelp(me.id, t.id))}>괜찮아요, 혼자 해볼게요</button>
+                </div>
+              )}
               <button type="button" className="btn-main" disabled={busyFlag} onClick={async () => {
                 setActiveId(t.id);
                 if (t.running) await send(() => api.pause(me.id, t.id));
@@ -372,6 +378,9 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
             <h2>도움을 요청했어요</h2>
             <p>타이머는 잠깐 멈췄어요.<br />부모님과 함께 이야기해 봐요.</p>
             <button type="button" className="btn-main" onClick={() => go('focus')}>다시 해볼게요</button>
+            {active && <button type="button" className="btn-secondary" disabled={busyFlag} onClick={async () => {
+              if (await send(() => api.cancelHelp(me.id, active.id))) go('focus');
+            }}>괜찮아요, 혼자 해볼게요 (요청 취소)</button>}
           </div>
         </>
       );

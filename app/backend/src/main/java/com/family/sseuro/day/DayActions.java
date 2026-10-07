@@ -172,6 +172,15 @@ public class DayActions {
         });
     }
 
+    /** 아이가 도움 요청을 거두기 ('괜찮아요, 혼자 해볼게요'). 이미 닫힌 요청이면 그대로 (재시도 안전) */
+    @Transactional
+    public DayView cancelHelp(AuthUser me, long childId, long taskId) {
+        return act(me, childId, (child, rec, today) -> {
+            find(today, taskId);
+            d.helps.findFirstByTaskIdAndStatus(taskId, HelpRequest.OPEN).ifPresent(h -> h.cancel(time.now()));
+        });
+    }
+
     /** 자유시간 이용권 받기: 아이+오늘에 하나만. 이미 있으면 그대로 돌려준다 */
     @Transactional
     public DayView issuePass(AuthUser me, long childId) {

@@ -70,6 +70,11 @@ public class DayController {
         return actions.help(me, childId, taskId, body.reason());
     }
 
+    @PostMapping("/api/children/{childId}/tasks/{taskId}/help/cancel")
+    public DayView cancelHelp(@AuthenticationPrincipal AuthUser me, @PathVariable long childId, @PathVariable long taskId) {
+        return actions.cancelHelp(me, childId, taskId);
+    }
+
     @PostMapping("/api/children/{childId}/today/free-pass")
     public DayView issuePass(@AuthenticationPrincipal AuthUser me, @PathVariable long childId) {
         return actions.issuePass(me, childId);

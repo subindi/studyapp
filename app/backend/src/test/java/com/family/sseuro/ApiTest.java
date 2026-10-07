@@ -466,6 +466,19 @@ class ApiTest {
     }
 
     @Test
+    void 아이가_도움_요청을_스스로_거둘_수_있다() throws Exception {
+        Cookie c = family();
+        long kid = child(c, "승윤", 2, true, true);
+        long t = taskIds(c, kid).get(0);
+        mvc.perform(json(post("/api/children/" + kid + "/tasks/" + t + "/help").cookie(c), "{\"reason\":\"집중이 안 돼요\"}"))
+                .andExpect(jsonPath("$.tasks[0].helpOpen").value(true));
+        mvc.perform(post("/api/children/" + kid + "/tasks/" + t + "/help/cancel").cookie(c)).andExpect(jsonPath("$.help").isEmpty())
+                .andExpect(jsonPath("$.tasks[0].helpOpen").value(false));
+        mvc.perform(post("/api/children/" + kid + "/tasks/" + t + "/help/cancel").cookie(c)).andExpect(status().isOk()); // 다시 눌러도 그대로
+        assertThat((List<?>) JsonPath.read(body(get("/api/parent/overview").cookie(c)), "$.children[0].help")).isEmpty();
+    }
+
+    @Test
     void 리포트는_실제_기록만_보여준다() throws Exception {
         Cookie c = family();
         long kid = child(c, "승윤", 2, true, true);
