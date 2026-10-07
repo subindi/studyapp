@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { errorMessage } from '../sync/api';
 import type { Task } from '../sync/api';
 import { STATUS_LABEL } from '../policy';
@@ -109,19 +109,23 @@ export function ProgressBar({ done, total, label = '필수 할 일' }: { done: n
   );
 }
 
-export function TaskRow({ task, detail, action, pending, current, handle }: {
+export function TaskRow({ task, detail, action, pending, current, handle, onKey, label }: {
   task: Task;
   detail?: ReactNode;
   action?: ReactNode;
   pending?: boolean;
   current?: boolean;
-  /** 아이콘을 손잡이로 (끌기) */
+  /** 박스 전체를 손잡이로 (끌기) */
   handle?: HandleProps;
+  /** 키보드로 같은 동작 (Enter · 방향키) */
+  onKey?: (e: KeyboardEvent<HTMLDivElement>) => void;
+  label?: string;
 }) {
   const done = task.status === 'done';
   return (
-    <div className={`task${done ? ' done' : ''}${current ? ' current' : ''}`}>
-      <span aria-hidden="true" {...handle} className={`emoji${handle ? ` ${handle.className}` : ''}`}>{done ? '✓' : task.icon}</span>
+    <div {...handle} tabIndex={handle ? 0 : undefined} role={handle ? 'button' : undefined} aria-label={label} onKeyDown={onKey}
+      className={`task${done ? ' done' : ''}${current ? ' current' : ''}${handle ? ` ${handle.className}` : ''}`}>
+      <span aria-hidden="true" className="emoji">{done ? '✓' : task.icon}</span>
       <div className="copy">
         <strong>{task.title}</strong>
         <small>

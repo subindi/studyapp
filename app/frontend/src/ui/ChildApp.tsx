@@ -217,19 +217,22 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
           {open.length > 0 && !allRequiredDone && (
             <div ref={zone.zoneRef} className={`drop-zone${zone.dragging ? ' ready' : ''}${zone.dragging?.over ? ' over' : ''}`}>
               <strong>{zone.dragging?.over ? '놓으면 시작해요!' : '🎯 여기에 끌어다 놓으면 시작'}</strong>
-              <small>할 일 아이콘을 잡고 이 칸으로 끌어와요 · 톡 누르면 열려요</small>
+              <small>할 일 상자를 잡고 이 칸으로 끌어와요 · 톡 누르면 열려요</small>
             </div>
           )}
           <div className="list">
             {tasks.map((t) => (
               <TaskRow key={t.id} task={t} pending={view.pending.includes(t.id)} current={wide && page === 'focus' && t.id === activeId}
-                handle={isCounted(t) && t.status !== 'done' ? zone.handle(t.id) : undefined}
+                handle={isCounted(t) ? zone.handle(t.id) : undefined}
+                label={isCounted(t) ? `${t.title} ${t.status === 'done' ? '보기' : '열기'}` : undefined}
+                onKey={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    dropAction.current?.tap(t.id);
+                  }
+                }}
                 detail={t.movedIn ? `${STATUS_LABEL[t.status]} · 어제에서 옮겨 옴` : undefined}
-                action={isCounted(t) ? (
-                  <button type="button" className="btn-quiet" onClick={() => { setActiveId(t.id); go(t.status === 'done' ? 'done' : 'focus'); }}>
-                    {t.status === 'done' ? '보기' : '열기'}
-                  </button>
-                ) : undefined} />
+                action={isCounted(t) ? <span className="card-hint" aria-hidden="true">{t.status === 'done' ? '보기' : '끌기 · 열기'}</span> : undefined} />
             ))}
           </div>
         </>
@@ -488,17 +491,20 @@ function PlanPage({ view, busy, onBack, onSave }: {
       <button type="button" className="btn-back" onClick={onBack}>← 돌아가기</button>
       <div className="kicker">내가 고르는 순서</div>
       <h2>뭐부터 할까?</h2>
-      <p>아이콘을 잡고 위아래로 끌어 순서를 바꿔요.{me.level >= 3 && ' 예상시간도 내가 정해요.'}</p>
+      <p>할 일 상자를 잡고 위아래로 끌어 순서를 바꿔요.{me.level >= 3 && ' 예상시간도 내가 정해요.'}</p>
       <SortableList label="오늘 할 일 순서" items={items} onReorder={setOrder} renderItem={(t, handle) => {
         const i = order.indexOf(t.id);
         return (
           <>
-            <TaskRow task={t} handle={handle} detail={`${i + 1}번째 · 예상 ${est[t.id]}분`} action={
-              <div className="move">
-                <button type="button" aria-label={`${t.title} 위로`} disabled={i === 0} onClick={() => move(i, -1)}>↑</button>
-                <button type="button" aria-label={`${t.title} 아래로`} disabled={i === items.length - 1} onClick={() => move(i, 1)}>↓</button>
-              </div>
-            } />
+            <TaskRow task={t} handle={handle} detail={`${i + 1}번째 · 예상 ${est[t.id]}분`}
+              label={`${i + 1}번째 ${t.title}. 위아래 방향키로 순서 바꾸기`}
+              onKey={(e) => {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  move(i, e.key === 'ArrowUp' ? -1 : 1);
+                }
+              }}
+              action={<span className="card-hint" aria-hidden="true">{i + 1}</span>} />
             {me.level >= 3 && (
               <div className="row">
                 <label htmlFor={`est-${t.id}`}><small>{t.title} 예상시간</small></label>

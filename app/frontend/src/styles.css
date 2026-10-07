@@ -190,7 +190,9 @@ textarea { resize: vertical; }
 /* ---------------------------------------------------------------- 끌기 (아이 화면) */
 .grip { cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; position: relative; }
 .grip:active { cursor: grabbing; }
-.grip::after { content: '⠿'; position: absolute; right: -6px; bottom: -6px; font-size: 11px; color: var(--muted); background: var(--bg); border-radius: 6px; padding: 0 2px; line-height: 1.2; }
+.task.grip { -webkit-touch-callout: none; }
+.card-hint { font-size: 13px; color: var(--muted); padding: 0 6px; white-space: nowrap; }
+.sortable .card-hint { display: grid; place-items: center; min-width: 30px; height: 30px; border-radius: 50%; background: var(--soft); color: var(--accent); font-weight: 600; padding: 0; }
 .sortable .sort-item { transition: transform .18s ease; position: relative; }
 .sortable .sort-item.dragging .task { box-shadow: 0 12px 28px #243e3226; border-color: var(--accent); background: var(--panel); }
 .drop-zone { border: 2px dashed var(--accent); border-radius: 20px; padding: 18px 14px; text-align: center; margin: 16px 0; color: var(--accent); background: transparent; transition: background .15s, transform .15s; }
