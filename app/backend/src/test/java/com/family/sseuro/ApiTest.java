@@ -1,6 +1,7 @@
 package com.family.sseuro;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -274,6 +275,23 @@ class ApiTest {
         mvc.perform(json(post("/api/parent/children/" + kid + "/routines").cookie(c), req)).andExpect(status().isOk());
         assertThat((List<?>) JsonPath.read(body(get("/api/parent/children/" + kid + "/routines").cookie(c)), "$")).hasSize(1);
         assertThat(taskIds(c, kid)).hasSize(1); // 오늘에도 한 번만 추가
+    }
+
+    @Test
+    void 반복_할_일_삭제는_다음날부터_시작_안_한_오늘_할_일은_골라서_뺀다() throws Exception {
+        Cookie c = family();
+        long kid = child(c, "승윤", 2, true, true, true);
+        String routines = body(get("/api/parent/children/" + kid + "/routines").cookie(c));
+        long r0 = ((Number) JsonPath.read(routines, "$[0].id")).longValue();
+        long r1 = ((Number) JsonPath.read(routines, "$[1].id")).longValue();
+        act(c, kid, taskIds(c, kid).get(1), "start"); // 두 번째는 이미 시작
+        mvc.perform(delete("/api/parent/children/" + kid + "/routines/" + r0 + "?today=true").cookie(c)).andExpect(jsonPath("$.removedToday").value(true));
+        mvc.perform(delete("/api/parent/children/" + kid + "/routines/" + r1 + "?today=true").cookie(c)).andExpect(jsonPath("$.removedToday").value(false));
+        assertThat(taskIds(c, kid)).hasSize(1); // 시작한 할 일은 기록으로 남음
+        assertThat((List<?>) JsonPath.read(body(get("/api/parent/children/" + kid + "/routines").cookie(c)), "$")).isEmpty();
+        clock.plus(24 * 3600);
+        unlock(c);
+        assertThat(taskIds(c, kid)).isEmpty(); // 내일부터는 안 나옴
     }
 
     // ---------------------------------------------------------------- 타이머

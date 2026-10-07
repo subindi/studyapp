@@ -207,7 +207,8 @@ export const api = {
   addRoutine: (childId: number, requestId: string, routine: RoutineInput, addToday: boolean) =>
     request<Routine>('POST', `/parent/children/${childId}/routines`, { requestId, routine, addToday }),
   updateRoutine: (childId: number, id: number, routine: RoutineInput) => request<Routine>('PUT', `/parent/children/${childId}/routines/${id}`, routine),
-  deleteRoutine: (childId: number, id: number) => request<null>('DELETE', `/parent/children/${childId}/routines/${id}`),
+  deleteRoutine: (childId: number, id: number, today: boolean) =>
+    request<{ removedToday: boolean }>('DELETE', `/parent/children/${childId}/routines/${id}?today=${today}`),
 };
 
 /** 재시도해도 같은 값이 가도록 폼을 열 때 한 번 만드는 요청 번호 */

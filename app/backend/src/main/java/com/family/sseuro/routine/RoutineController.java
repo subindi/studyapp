@@ -6,8 +6,8 @@ import com.family.sseuro.routine.RoutineDtos.RoutineDto;
 import com.family.sseuro.routine.RoutineDtos.RoutineRequest;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /** 반복 할 일 관리 (부모 모드에서만) */
@@ -44,9 +45,10 @@ public class RoutineController {
         return routines.update(me, childId, routineId, body);
     }
 
+    /** 반복 할 일 삭제 (다음 생성일부터 안 나옴). today=true 면 아직 시작 안 한 오늘 할 일도 뺀다 */
     @DeleteMapping("/{routineId}")
-    public ResponseEntity<Void> delete(@AuthenticationPrincipal AuthUser me, @PathVariable long childId, @PathVariable long routineId) {
-        routines.deactivate(me, childId, routineId);
-        return ResponseEntity.noContent().build();
+    public Map<String, Boolean> delete(@AuthenticationPrincipal AuthUser me, @PathVariable long childId, @PathVariable long routineId,
+                                       @RequestParam(defaultValue = "false") boolean today) {
+        return Map.of("removedToday", routines.deactivate(me, childId, routineId, today));
     }
 }

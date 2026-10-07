@@ -23,6 +23,8 @@ interface TaskRepository extends JpaRepository<Task, Long> {
 
     boolean existsByChildIdAndDayAndRoutineId(long childId, LocalDate day, long routineId);
 
+    Optional<Task> findByChildIdAndDayAndRoutineId(long childId, LocalDate day, long routineId);
+
     /** 지난 날에 진행 중으로 남은 타이머 (하루 마감 처리용) */
     List<Task> findByChildIdAndDayBeforeAndRunningSinceIsNotNull(long childId, LocalDate day);
 

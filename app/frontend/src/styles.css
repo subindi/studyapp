@@ -217,3 +217,7 @@ textarea { resize: vertical; }
 .slide.hint .slide-knob { animation: nudge .6s ease; }
 @keyframes nudge { 0%, 100% { transform: translateX(0); } 40% { transform: translateX(26px); } }
 @media (prefers-reduced-motion: reduce) { .slide.hint .slide-knob { animation: none; } }
+
+/* 부모 화면: 할 일 줄의 버튼 · 휴대폰 아래 메뉴 고정 */
+.row-actions { display: flex; gap: 6px; flex: none; }
+.parent-shell .nav.mobile { position: sticky; bottom: 0; z-index: 10; background: var(--bg); margin: 26px -20px 0; padding: 10px 20px max(10px, env(safe-area-inset-bottom)); }

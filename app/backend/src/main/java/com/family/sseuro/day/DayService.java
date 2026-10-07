@@ -114,6 +114,21 @@ public class DayService {
         recheckApproval(child, rec);
     }
 
+    /**
+     * 반복 할 일을 삭제하면서 '오늘 할 일에서도 빼기'를 고른 경우: 아직 시작하지 않은 오늘 할 일만 지운다.
+     * 시작했거나 완료 · 면제 · 이동한 할 일은 기록이라 남긴다. 지웠으면 true
+     */
+    public boolean removeRoutineToday(Child child, Routine r) {
+        LocalDate today = time.today();
+        DayRecord rec = openDay(child, today);
+        Task t = tasks.findByChildIdAndDayAndRoutineId(child.getId(), today, r.getId()).orElse(null);
+        if (t == null || !Task.READY.equals(t.getStatus()) || t.getElapsedSec() > 0 || t.isRunning()) return false;
+        tasks.delete(t);
+        tasks.flush();
+        recheckApproval(child, rec);
+        return true;
+    }
+
     // ---------------------------------------------------------------- 자유시간 조건
 
     record Condition(int done, int total, int optionalDone) {

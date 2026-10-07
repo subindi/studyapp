@@ -19,7 +19,7 @@ type Page =
   | { k: 'pin' };
 
 type Menu = 'today' | 'routines' | 'report' | 'settings';
-const MENU: [Menu, string][] = [['today', '오늘'], ['routines', '할 일'], ['report', '성장'], ['settings', '설정']];
+const MENU: [Menu, string][] = [['today', '오늘'], ['routines', '할 일 관리'], ['report', '성장'], ['settings', '설정']];
 
 function menuOf(p: Page): Menu {
   if (p.k === 'detail' || p.k === 'adjust') return 'today';
@@ -85,7 +85,9 @@ export function ParentApp({ me, family, onFamily, onChildMode, onLocked, onLogou
     body = <TodayPage guard={guard} onDetail={(id) => { setChildId(id); go({ k: 'detail', childId: id }); }} notice={notice} />;
   } else if (page.k === 'detail') {
     body = <DetailPage guard={guard} childId={page.childId} onBack={() => go({ k: 'today' })}
-      onAdjust={(taskId) => go({ k: 'adjust', childId: page.childId, taskId })} />;
+      onAdjust={(taskId) => go({ k: 'adjust', childId: page.childId, taskId })}
+      onAdd={() => { setChildId(page.childId); go({ k: 'routine-form', routine: null }); }}
+      onManage={() => { setChildId(page.childId); go({ k: 'routines' }); }} />;
   } else if (page.k === 'adjust') {
     body = <AdjustPage guard={guard} childId={page.childId} taskId={page.taskId} onBack={() => go({ k: 'detail', childId: page.childId })} />;
   } else if (page.k === 'routines' && child) {
@@ -185,7 +187,14 @@ function useDay(guard: Guard, childId: number) {
   return { view, setView, error, setError, load };
 }
 
-function DetailPage({ guard, childId, onBack, onAdjust }: { guard: Guard; childId: number; onBack: () => void; onAdjust: (taskId: number) => void }) {
+function DetailPage({ guard, childId, onBack, onAdjust, onAdd, onManage }: {
+  guard: Guard;
+  childId: number;
+  onBack: () => void;
+  onAdjust: (taskId: number) => void;
+  onAdd: () => void;
+  onManage: () => void;
+}) {
   const { view, setView, error } = useDay(guard, childId);
   const save = useSave();
   const act = async (fn: () => Promise<DayView>, text: string) => {
@@ -208,8 +217,12 @@ function DetailPage({ guard, childId, onBack, onAdjust }: { guard: Guard; childI
           <div className="list">
             {view.tasks.length === 0 && <p>오늘 할 일이 없어요.</p>}
             {view.tasks.map((t) => (
-              <TaskRow key={t.id} task={t} detail={taskDetail(t)} action={<button type="button" className="btn-quiet" onClick={() => onAdjust(t.id)}>조정</button>} />
+              <TaskRow key={t.id} task={t} detail={taskDetail(t)} action={<button type="button" className="btn-small" onClick={() => onAdjust(t.id)}>오늘만 조정</button>} />
             ))}
+          </div>
+          <div className="pair">
+            <button type="button" className="btn-secondary" onClick={onAdd}>+ 할 일 추가</button>
+            <button type="button" className="btn-secondary" onClick={onManage}>할 일 수정 · 삭제</button>
           </div>
         </div>
         <div>
@@ -300,30 +313,61 @@ function AdjustPage({ guard, childId, taskId, onBack }: { guard: Guard; childId:
 function RoutinesPage({ guard, child, picker, notice, onEdit }: { guard: Guard; child: Child; picker: ReactNode; notice: string | null; onEdit: (r: Routine | null) => void }) {
   const [list, setList] = useState<Routine[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(notice);
+  const load = useCallback(() => guard(api.routines(child.id)).then(setList, (e) => setError(errorMessage(e))), [guard, child.id]);
   useEffect(() => {
     setList(null);
-    guard(api.routines(child.id)).then(setList, (e) => setError(errorMessage(e)));
-  }, [guard, child.id]);
+    void load();
+  }, [load]);
   return (
     <>
       <div className="kicker">한 번 설정하면 매주 반복</div>
       <h2>{child.name}의 할 일 관리</h2>
       {picker}
-      {notice && <div className="tip" role="status">{notice}</div>}
+      <button type="button" className="btn-main" onClick={() => onEdit(null)}>+ 할 일 추가</button>
+      {message && <div className="tip" role="status">{message}</div>}
       {error && <div className="tip warm" role="alert">{error}</div>}
       <div className="list">
-        {list?.length === 0 && <p>아직 반복 할 일이 없어요.</p>}
+        {list?.length === 0 && <p>아직 할 일이 없어요. 위의 '+ 할 일 추가'로 만들어 주세요.</p>}
         {list?.map((r) => (
-          <div key={r.id} className="task">
-            <span className="emoji" aria-hidden="true">{r.icon}</span>
-            <div className="copy"><strong>{r.title}</strong><small>{r.amount} · {r.required ? '필수' : '선택'} · {daysLabel(r.daysMask)} · 예상 {r.estimateMin}분</small></div>
-            <button type="button" className="btn-quiet" onClick={() => onEdit(r)}>수정</button>
-          </div>
+          <RoutineRow key={r.id} guard={guard} child={child} routine={r} onEdit={() => onEdit(r)}
+            onDeleted={(msg) => { setMessage(msg); void load(); }} />
         ))}
       </div>
-      <button type="button" className="btn-main" onClick={() => onEdit(null)}>+ 반복 할 일 추가</button>
       <div className="tip">기존 반복 일정 변경은 다음 생성일부터 적용돼요. 오늘 할 일은 '오늘' 화면에서 조정해요.</div>
     </>
+  );
+}
+
+/** 할 일 한 줄: 수정 · 삭제 (삭제는 한 번 더 확인) */
+function RoutineRow({ guard, child, routine: r, onEdit, onDeleted }: { guard: Guard; child: Child; routine: Routine; onEdit: () => void; onDeleted: (msg: string) => void }) {
+  const [confirm, setConfirm] = useState(false);
+  const [today, setToday] = useState(true);
+  const save = useSave();
+  return (
+    <div>
+      <div className="task">
+        <span className="emoji" aria-hidden="true">{r.icon}</span>
+        <div className="copy"><strong>{r.title}</strong><small>{r.amount} · {r.required ? '필수' : '선택'} · {daysLabel(r.daysMask)} · 예상 {r.estimateMin}분</small></div>
+        <div className="row-actions">
+          <button type="button" className="btn-small" onClick={onEdit}>수정</button>
+          <button type="button" className="btn-small btn-danger" onClick={() => setConfirm(!confirm)} aria-expanded={confirm}>삭제</button>
+        </div>
+      </div>
+      {confirm && (
+        <div className="tip warm">
+          <strong>'{r.title}'을(를) 삭제할까요?</strong>
+          <p>내일부터는 할 일에 나오지 않아요. 지난 기록은 남아요.</p>
+          <label className="check"><input type="checkbox" checked={today} onChange={(e) => setToday(e.target.checked)} />오늘 할 일에서도 빼기 (아직 시작하지 않았을 때만)</label>
+          <button type="button" className="btn-secondary btn-danger" disabled={save.saving} onClick={async () => {
+            const res = await save.run(() => guard(api.deleteRoutine(child.id, r.id, today)));
+            if (res) onDeleted(`'${r.title}'을(를) 삭제했어요.${today && !res.removedToday ? ' 오늘 이미 시작한 할 일이라 오늘 목록에는 남겨 뒀어요.' : ''}`);
+          }}>네, 삭제할게요</button>
+          <button type="button" className="btn-quiet" onClick={() => setConfirm(false)}>취소</button>
+          <SaveNotice state={save.state.kind === 'saved' ? { kind: 'idle' } : save.state} />
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -346,9 +390,9 @@ function RoutineForm({ guard, child, routine, onBack, onSaved }: { guard: Guard;
   };
   return (
     <>
-      <button type="button" className="btn-back" onClick={onBack}>← 할 일 목록</button>
-      <div className="kicker">{child.name} · 반복 할 일</div>
-      <h2>{routine ? '반복 일정 수정' : '새 할 일 만들기'}</h2>
+      <button type="button" className="btn-back" onClick={onBack}>← 할 일 관리</button>
+      <div className="kicker">{child.name} · 할 일</div>
+      <h2>{routine ? '할 일 수정' : '새 할 일 만들기'}</h2>
       <form onSubmit={submit}>
         <label className="label" htmlFor="task-name">할 일 이름</label>
         <input id="task-name" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} placeholder="예: 한글책 읽기" maxLength={60} required />
@@ -379,19 +423,19 @@ function RoutineForm({ guard, child, routine, onBack, onSaved }: { guard: Guard;
         <div className="tip">사진 인증은 넣지 않았어요. 아이의 자기확인 후 하루 단위로 부모님이 확인해요.</div>
         <ErrorText text={error} />
         <SaveNotice state={save.state.kind === 'saved' ? { kind: 'idle' } : save.state} retry={() => void submit()} />
-        <button type="submit" className="btn-main" disabled={save.saving}>{save.saving ? '저장하는 중…' : routine ? '반복 일정 저장' : '할 일 추가하기'}</button>
+        <button type="submit" className="btn-main" disabled={save.saving}>{save.saving ? '저장하는 중…' : routine ? '수정 내용 저장' : '할 일 추가하기'}</button>
       </form>
       {routine && (confirmDelete ? (
         <div className="tip warm">
-          <strong>반복을 끝낼까요?</strong>
-          <p>다음 생성일부터 만들지 않아요. 오늘 할 일과 지난 기록은 남아요.</p>
+          <strong>이 할 일을 삭제할까요?</strong>
+          <p>내일부터는 나오지 않아요. 아직 시작하지 않았다면 오늘 할 일에서도 빠져요. 지난 기록은 남아요.</p>
           <button type="button" className="btn-secondary btn-danger" disabled={save.saving} onClick={async () => {
-            const ok = await save.run(() => guard(api.deleteRoutine(child.id, routine.id)).then(() => true));
-            if (ok) onSaved('반복을 끝냈어요.');
-          }}>네, 반복 끝내기</button>
+            const ok = await save.run(() => guard(api.deleteRoutine(child.id, routine.id, true)));
+            if (ok) onSaved('할 일을 삭제했어요.');
+          }}>네, 삭제할게요</button>
           <button type="button" className="btn-quiet" onClick={() => setConfirmDelete(false)}>취소</button>
         </div>
-      ) : <button type="button" className="btn-quiet btn-danger" onClick={() => setConfirmDelete(true)}>반복 끝내기</button>)}
+      ) : <button type="button" className="btn-secondary btn-danger" onClick={() => setConfirmDelete(true)}>이 할 일 삭제</button>)}
     </>
   );
 }

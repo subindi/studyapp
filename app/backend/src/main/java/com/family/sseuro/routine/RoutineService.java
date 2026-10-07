@@ -64,8 +64,10 @@ public class RoutineService {
 
     /** 반복 끝내기: 다음 생성일부터 만들지 않는다 (오늘 이미 만든 할 일과 지난 기록은 남는다) */
     @Transactional
-    public void deactivate(AuthUser me, long childId, long routineId) {
-        find(me, childId, routineId).deactivate(time.now());
+    public boolean deactivate(AuthUser me, long childId, long routineId, boolean removeToday) {
+        Routine r = find(me, childId, routineId);
+        r.deactivate(time.now());
+        return removeToday && days.removeRoutineToday(days.child(me, childId), r);
     }
 
     private Routine find(AuthUser me, long childId, long routineId) {
