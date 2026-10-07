@@ -164,7 +164,7 @@ export function parentBadge(free: Free): string {
   }
 }
 
-export const ICONS = ['📖', '🔢', '✏️', '🎬', '🎧', '🧩', '📚', '🎵', '🌱'];
+export const ICONS = ['📖', '🔢', '✏️', '🎬', '🎧', '🧩', '📚', '🎵', '📝', '🖌️', '🌱'];
 
 /** 처음 시작할 때 고를 수 있는 할 일 (시안의 예시 · 월–금 필수로 시작) */
 export const STARTER_TASKS: { icon: string; title: string; amount: string; estimateMin: number }[] = [

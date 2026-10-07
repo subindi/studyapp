@@ -6,6 +6,7 @@ import {
 } from '../policy';
 import { ErrorText, Header, ProgressBar, SaveNotice, TaskRow, useSave } from './common';
 import { ChildWizard, PinFields } from './Setup';
+import { PRESETS, dayBitOf } from '../presets';
 
 type Page =
   | { k: 'today' }
@@ -13,6 +14,7 @@ type Page =
   | { k: 'adjust'; childId: number; taskId: number }
   | { k: 'routines' }
   | { k: 'routine-form'; routine: Routine | null }
+  | { k: 'preset' }
   | { k: 'report' }
   | { k: 'settings' }
   | { k: 'add-child' }
@@ -23,7 +25,7 @@ const MENU: [Menu, string][] = [['today', '오늘'], ['routines', '할 일 관�
 
 function menuOf(p: Page): Menu {
   if (p.k === 'detail' || p.k === 'adjust') return 'today';
-  if (p.k === 'routine-form') return 'routines';
+  if (p.k === 'routine-form' || p.k === 'preset') return 'routines';
   if (p.k === 'add-child' || p.k === 'pin') return 'settings';
   return p.k;
 }
@@ -91,7 +93,10 @@ export function ParentApp({ me, family, onFamily, onChildMode, onLocked, onLogou
   } else if (page.k === 'adjust') {
     body = <AdjustPage guard={guard} childId={page.childId} taskId={page.taskId} onBack={() => go({ k: 'detail', childId: page.childId })} />;
   } else if (page.k === 'routines' && child) {
-    body = <RoutinesPage guard={guard} child={child} picker={picker} notice={notice} onEdit={(r) => go({ k: 'routine-form', routine: r })} />;
+    body = <RoutinesPage guard={guard} child={child} picker={picker} notice={notice} onEdit={(r) => go({ k: 'routine-form', routine: r })}
+      onPreset={() => go({ k: 'preset' })} />;
+  } else if (page.k === 'preset' && child) {
+    body = <PresetPage guard={guard} child={child} today={family.today} onBack={() => go({ k: 'routines' })} onDone={(msg) => go({ k: 'routines' }, msg)} />;
   } else if (page.k === 'routine-form' && child) {
     body = <RoutineForm guard={guard} child={child} routine={page.routine} onBack={() => go({ k: 'routines' })} onSaved={(msg) => go({ k: 'routines' }, msg)} />;
   } else if (page.k === 'report' && child) {
@@ -310,7 +315,14 @@ function AdjustPage({ guard, childId, taskId, onBack }: { guard: Guard; childId:
 
 // ---------------------------------------------------------------- 반복 할 일
 
-function RoutinesPage({ guard, child, picker, notice, onEdit }: { guard: Guard; child: Child; picker: ReactNode; notice: string | null; onEdit: (r: Routine | null) => void }) {
+function RoutinesPage({ guard, child, picker, notice, onEdit, onPreset }: {
+  guard: Guard;
+  child: Child;
+  picker: ReactNode;
+  notice: string | null;
+  onEdit: (r: Routine | null) => void;
+  onPreset: () => void;
+}) {
   const [list, setList] = useState<Routine[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(notice);
@@ -325,6 +337,7 @@ function RoutinesPage({ guard, child, picker, notice, onEdit }: { guard: Guard; 
       <h2>{child.name}의 할 일 관리</h2>
       {picker}
       <button type="button" className="btn-main" onClick={() => onEdit(null)}>+ 할 일 추가</button>
+      <button type="button" className="btn-secondary" onClick={onPreset}>📋 시간표 한 번에 넣기</button>
       {message && <div className="tip" role="status">{message}</div>}
       {error && <div className="tip warm" role="alert">{error}</div>}
       <div className="list">
@@ -335,6 +348,71 @@ function RoutinesPage({ guard, child, picker, notice, onEdit }: { guard: Guard; 
         ))}
       </div>
       <div className="tip">기존 반복 일정 변경은 다음 생성일부터 적용돼요. 오늘 할 일은 '오늘' 화면에서 조정해요.</div>
+    </>
+  );
+}
+
+/**
+ * 집 시간표(presets.ts)를 아이에게 한 번에 넣기.
+ * 요청 번호를 화면을 여는 동안 유지 → 중간에 실패해 다시 눌러도 같은 할 일이 두 번 생기지 않는다.
+ */
+function PresetPage({ guard, child, today, onBack, onDone }: { guard: Guard; child: Child; today: string; onBack: () => void; onDone: (msg: string) => void }) {
+  const [presetId, setPresetId] = useState(() => (PRESETS.find((p) => p.forName === child.name) ?? PRESETS[0]).id);
+  const [replace, setReplace] = useState(true);
+  const [progress, setProgress] = useState<string | null>(null);
+  const nonce = useRef(newRequestId());
+  const created = useRef(new Set<number>());
+  const save = useSave();
+  const preset = PRESETS.find((p) => p.id === presetId)!;
+  const todayBit = dayBitOf(today);
+
+  const apply = async () => {
+    const ok = await save.run(async () => {
+      if (replace) {
+        const existing = (await guard(api.routines(child.id))).filter((r) => !created.current.has(r.id));
+        for (let i = 0; i < existing.length; i++) {
+          setProgress(`지금 있는 할 일 정리 중 ${i + 1} / ${existing.length}`);
+          await guard(api.deleteRoutine(child.id, existing[i].id, true));
+        }
+      }
+      for (let i = 0; i < preset.items.length; i++) {
+        setProgress(`할 일 넣는 중 ${i + 1} / ${preset.items.length}`);
+        const it = preset.items[i];
+        // 요청 번호는 40자 이내 (서버 제한): 화면별 번호 앞부분 + 시간표 · 줄 번호
+        const requestId = `p:${nonce.current.slice(0, 24)}:${PRESETS.indexOf(preset)}:${i}`;
+        const r = await guard(api.addRoutine(child.id, requestId, it, (it.daysMask & todayBit) !== 0));
+        created.current.add(r.id);
+      }
+      return true;
+    }, '시간표를 넣었어요');
+    setProgress(null);
+    if (ok) onDone(`'${preset.title}' 할 일 ${preset.items.length}개를 넣었어요. 오늘 요일에 해당하는 할 일은 오늘 목록에도 들어갔어요.`);
+  };
+
+  return (
+    <>
+      <button type="button" className="btn-back" onClick={onBack}>← 할 일 관리</button>
+      <div className="kicker">{child.name} · 시간표 한 번에 넣기</div>
+      <h2>어떤 시간표를<br />넣을까요?</h2>
+      <div className="choices" role="group" aria-label="시간표 고르기">
+        {PRESETS.map((p) => (
+          <button key={p.id} type="button" className={`choice${presetId === p.id ? ' selected' : ''}`} aria-pressed={presetId === p.id} onClick={() => setPresetId(p.id)}>{p.title}</button>
+        ))}
+      </div>
+      {preset.forName !== child.name && <div className="tip warm">이 시간표는 {preset.forName} 것이에요. {child.name}에게 넣으려는 게 맞는지 확인해 주세요.</div>}
+      <div className="list">
+        {preset.items.map((it, i) => (
+          <div key={i} className="task">
+            <span className="emoji" aria-hidden="true">{it.icon}</span>
+            <div className="copy"><strong>{it.title}</strong><small>{it.amount} · {daysLabel(it.daysMask)} · 예상 {it.estimateMin}분 · 필수</small></div>
+          </div>
+        ))}
+      </div>
+      <label className="check"><input type="checkbox" checked={replace} onChange={(e) => setReplace(e.target.checked)} />지금 있는 {child.name}의 할 일은 지우고 이 시간표로 바꾸기</label>
+      <div className="tip">모두 '필수'로 넣어요. 넣은 뒤 할 일 관리에서 하나씩 고치거나 선택으로 바꿀 수 있어요. 지운 할 일의 지난 기록은 남아요.</div>
+      {progress && <div className="tip" role="status">{progress}</div>}
+      <SaveNotice state={save.state.kind === 'saved' ? { kind: 'idle' } : save.state} retry={() => void apply()} />
+      <button type="button" className="btn-main" disabled={save.saving} onClick={() => void apply()}>{save.saving ? '넣는 중…' : `${child.name}에게 ${preset.items.length}개 넣기`}</button>
     </>
   );
 }
