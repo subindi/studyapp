@@ -7,6 +7,7 @@ import {
 import { ErrorText, Header, ProgressBar, SaveNotice, TaskRow, useSave } from './common';
 import { ChildWizard, PinFields } from './Setup';
 import { PRESETS, dayBitOf } from '../presets';
+import { Mascot, SkinHero } from './skin';
 
 type Page =
   | { k: 'today' }
@@ -78,7 +79,6 @@ export function ParentApp({ me, family, onFamily, onChildMode, onLocked, onLogou
   if (noChild) {
     body = (
       <div className="empty">
-        <div className="large-emoji" aria-hidden="true">🌱</div>
         <h3>아직 등록된 아이가 없어요</h3>
         <button type="button" className="btn-main" onClick={() => go({ k: 'add-child' })}>아이 등록하기</button>
       </div>
@@ -123,13 +123,15 @@ export function ParentApp({ me, family, onFamily, onChildMode, onLocked, onLogou
     <div className="parent-shell">
       <aside className="sidebar" aria-label="부모 메뉴">
         <span className="brand">스스로 🌱</span>
-        <p>{family.name}</p>
+        <Mascot pose="welcome" />
+        <p>{family.name} · 부모 모드</p>
         <nav className="menu">{menuButtons()}</nav>
         <div className="note">부모 화면은 잠시 쓰지 않으면 다시 잠겨요.</div>
         <button type="button" className="btn-secondary" onClick={onChildMode}>🔒 아이 모드로 전환</button>
       </aside>
       <div className="app">
         <Header badge="부모 모드"><button type="button" className="btn-small" onClick={onChildMode}>🔒 잠그기</button></Header>
+        <SkinHero scene="today" compact copy="아이의 작은 시작을 함께 응원해요." />
         {body}
         <nav className="nav mobile" aria-label="부모 메뉴">{menuButtons()}</nav>
       </div>

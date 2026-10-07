@@ -8,6 +8,7 @@ import {
 } from '../policy';
 import { ErrorText, Header, OfflineNotice, ProgressBar, Ring, TaskRow, useNow, useOnline, useWide } from './common';
 import { DragGhost, SlideToConfirm, SortableList, useDragToZone } from './drag';
+import { SkinHero, type Scene } from './skin';
 
 type Page = 'today' | 'plan' | 'focus' | 'help' | 'hint' | 'asked' | 'finish' | 'done' | 'waiting' | 'free' | 'review' | 'growth';
 
@@ -202,7 +203,7 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
       <div className="kicker">{dayTitle(view.day)} · {levelName(me.level)}</div>
       <h2>{quest ? <>{callName(me.name)}, 하나씩<br />해볼까?</> : '오늘은 내가 계획해요'}</h2>
       <div className="hero">
-        {quest && <><div style={{ fontSize: 34 }} aria-hidden="true">🌱</div><h3>작은 시작이 자라나요</h3></>}
+        {quest && <h3>작은 시작이 자라나요</h3>}
         <ProgressBar done={view.progress.done} total={view.progress.total} />
       </div>
       {tasks.length === 0 ? (
@@ -290,7 +291,7 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
                 <span className="clock" role="timer" aria-live="off">{clock(left)}</span>
                 <small>{left === 0 ? '시간이 지나도 계속해도 돼요' : t.running ? '남은 예상시간' : elapsed ? '잠깐 쉬고 있어요' : '준비되면 시작해요'}</small>
               </Ring>
-              <button type="button" disabled={busyFlag || !online} onClick={() => void send(() => (t.running ? api.pause(me.id, t.id) : api.start(me.id, t.id)))}>
+              <button type="button" className="btn-blue" disabled={busyFlag || !online} onClick={() => void send(() => (t.running ? api.pause(me.id, t.id) : api.start(me.id, t.id)))}>
                 {t.running ? 'Ⅱ 잠깐 쉬기' : '▶ 시작하기'}
               </button>
               {!online && <p>타이머는 인터넷이 연결되어 있을 때 기록돼요.</p>}
@@ -301,7 +302,7 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
                   <button type="button" className="btn-secondary" disabled={busyFlag} onClick={() => void send(() => api.cancelHelp(me.id, t.id))}>괜찮아요, 혼자 해볼게요</button>
                 </div>
               )}
-              <button type="button" className="btn-main" disabled={busyFlag} onClick={async () => {
+              <button type="button" className="btn-main btn-blue" disabled={busyFlag} onClick={async () => {
                 setActiveId(t.id);
                 if (t.running) await send(() => api.pause(me.id, t.id));
                 go('finish');
@@ -466,9 +467,19 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
       break;
   }
 
+  // 화면마다 캐릭터 상태 (docs/05-dragon-skin-spec.md 적용표). 시윤(플래너)은 오늘 외에는 작은 헤더
+  const split = wide && (page === 'today' || page === 'focus');
+  const scene: Scene =
+    page === 'today' ? (tasks.length === 0 ? 'empty' : 'today')
+      : page === 'finish' ? 'finish-check'
+        : page === 'waiting' ? (allRequiredDone ? 'waiting' : 'today')
+          : page === 'free' ? (view.free.state === 'used' ? 'ended' : 'free')
+            : page;
+
   return (
-    <div className={`app ${quest ? 'quest' : 'planner'}${wide && (page === 'today' || page === 'focus') ? ' wide' : ''}`}>
+    <div className={`app ${quest ? 'quest' : 'planner'}${split ? ' wide' : ''}`}>
       <Header badge={`${me.name} · ${me.age}세`}><button type="button" className="btn-small" onClick={onSwitch}>바꾸기</button></Header>
+      <SkinHero scene={scene} compact={split || (!quest && page !== 'today')} />
       <OfflineNotice online={online} pending={pendingCount} onRetry={() => void refresh()} lastError={loadError} />
       <ErrorText text={actionError} />
       {body}

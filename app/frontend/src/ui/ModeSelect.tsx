@@ -4,12 +4,14 @@ import type { FamilyView, Me } from '../sync/api';
 import { LEVELS } from '../policy';
 import { Header, SaveNotice, useSave } from './common';
 import { PinFields } from './Setup';
+import { SkinHero } from './skin';
 
 /** 누가 시작할까요? — 아이 선택 · 부모 모드 (공용 태블릿에서도 아이마다 기록이 나뉜다) */
 export function ModeSelect({ family, onChild, onParent }: { family: FamilyView; onChild: (id: number) => void; onParent: () => void }) {
   return (
     <div className="app">
       <Header badge={family.name} />
+      <SkinHero scene="today" compact copy="오늘은 누가 시작할까?" />
       <div className="kicker">누가 시작할까요?</div>
       <h2>내 이름을 골라요</h2>
       {family.children.length === 0 && <p>아직 등록된 아이가 없어요. 부모 모드에서 아이를 등록해 주세요.</p>}
@@ -33,9 +35,9 @@ export function PinScreen({ onUnlocked, onBack, onForgot }: { onUnlocked: (me: M
   return (
     <div className="app">
       <Header badge="부모 모드" />
+      <SkinHero scene="asked" compact copy="부모님만 확인할 수 있어요." />
       <button type="button" className="btn-back" onClick={onBack}>← 아이 선택</button>
       <div className="center">
-        <div className="large-emoji" aria-hidden="true">🔒</div>
         <h2>부모님이 맞나요?</h2>
         <p>부모 PIN 을 입력해 주세요.</p>
       </div>
@@ -62,9 +64,9 @@ export function PinRecover({ onDone, onBack, title = '부모 계정으로\n다�
   return (
     <div className="app">
       <Header badge="부모 모드" />
+      <SkinHero scene="asked" compact copy="부모님만 확인할 수 있어요." />
       <button type="button" className="btn-back" onClick={onBack}>← PIN 입력</button>
       <div className="center">
-        <div className="large-emoji" aria-hidden="true">🔑</div>
         <h2 style={{ whiteSpace: 'pre-line' }}>{title}</h2>
         <p>가입한 부모 계정 비밀번호로 본인 확인 후<br />새 PIN 을 설정할 수 있어요.</p>
       </div>

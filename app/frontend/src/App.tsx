@@ -6,6 +6,7 @@ import { ModeSelect, PinRecover, PinScreen } from './ui/ModeSelect';
 import { ParentApp } from './ui/ParentApp';
 import { AuthScreen, ChildWizard, PinSetup } from './ui/Setup';
 import { Header } from './ui/common';
+import { SkinHero } from './ui/skin';
 
 type Screen =
   | { k: 'loading' }
@@ -92,6 +93,7 @@ export default function App() {
       return (
         <div className="app">
           <Header />
+          <SkinHero scene="saving" compact copy="잠시 뒤에 다시 연결해 봐요." />
           <div className="tip warm" role="alert"><strong>서버에 연결하지 못했어요</strong><p>{screen.text}</p>
             <button type="button" className="btn-secondary" onClick={() => void boot()}>다시 시도</button></div>
         </div>

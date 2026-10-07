@@ -3,6 +3,7 @@ import { api, newRequestId } from '../sync/api';
 import type { Child, Me, UiStyle } from '../sync/api';
 import { STARTER_TASKS } from '../policy';
 import { ErrorText, Header, SaveNotice, useSave } from './common';
+import { SkinHero } from './skin';
 
 /** 로그인 · 가입 (부모 계정). 가입하면 새 가족이 만들어진다 */
 export function AuthScreen({ onDone }: { onDone: (me: Me) => void }) {
@@ -23,8 +24,8 @@ export function AuthScreen({ onDone }: { onDone: (me: Me) => void }) {
     return (
       <div className="app">
         <Header badge="처음 시작" />
+        <SkinHero scene="today" />
         <div className="center">
-          <div className="large-emoji" aria-hidden="true">🌱</div>
           <div className="kicker">아이의 작은 자율권부터</div>
           <h2>내가 고르고,<br />내가 해내는 하루</h2>
           <p>할 일을 정하는 부모님과<br />스스로 시작하는 아이가 함께 사용해요.</p>
@@ -43,6 +44,7 @@ export function AuthScreen({ onDone }: { onDone: (me: Me) => void }) {
   return (
     <div className="app">
       <Header badge={mode === 'login' ? '로그인' : '설정 1 / 3'} />
+      <SkinHero scene="today" compact copy={mode === 'login' ? '다시 만나서 반가워요.' : '우리 가족을 만들어요.'} />
       <button type="button" className="btn-back" onClick={() => setMode('intro')}>← 이전</button>
       <div className="kicker">부모 계정</div>
       <h2>{mode === 'login' ? <>다시 만나서<br />반가워요</> : <>누구의 하루를<br />함께 시작할까요?</>}</h2>
@@ -106,6 +108,7 @@ export function PinSetup({ onDone }: { onDone: (me: Me) => void }) {
   return (
     <div className="app">
       <Header badge="설정 2 / 3" />
+      <SkinHero scene="today" compact copy="부모님만 아는 PIN 을 정해요." />
       <div className="kicker">부모 모드 보호</div>
       <h2>부모님만 설정을<br />바꿀 수 있게 해요</h2>
       <PinFields saving={save.saving} submitLabel="PIN 저장" onSubmit={async (pin) => {
@@ -139,7 +142,14 @@ export function ChildWizard({ step: stepLabel, onDone, onCancel }: {
   const [created, setCreated] = useState<Child | null>(null);
   const save = useSave();
 
-  const header = <Header badge={stepLabel ?? `아이 등록 ${Math.min(step, 3)} / 3`} />;
+  const header = (
+    <>
+      <Header badge={stepLabel ?? `아이 등록 ${Math.min(step, 3)} / 3`} />
+      {created
+        ? <SkinHero scene="today" pose="celebrate" compact copy="첫 하루가 준비됐어요." />
+        : <SkinHero scene="today" compact />}
+    </>
+  );
   const backBtn = (to: number) => (
     <button type="button" className="btn-back" onClick={() => (to === 0 ? onCancel?.() : setStep(to))}>← 이전</button>
   );
@@ -149,7 +159,6 @@ export function ChildWizard({ step: stepLabel, onDone, onCancel }: {
       <div className="app">
         {header}
         <div className="center">
-          <div className="large-emoji" aria-hidden="true">🎉</div>
           <h2>첫 하루가 준비됐어요</h2>
           <p>{created.name} · {created.level >= 3 ? '내가 계획해요' : '내가 골라요'}</p>
           <div className="hero">

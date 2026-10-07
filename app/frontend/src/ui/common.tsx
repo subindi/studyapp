@@ -3,6 +3,7 @@ import { errorMessage } from '../sync/api';
 import type { Task } from '../sync/api';
 import { STATUS_LABEL } from '../policy';
 import type { HandleProps } from './drag';
+import { Mascot } from './skin';
 
 /** 1초마다 다시 그리기 (타이머 표시용. 실제 시간은 서버가 계산) */
 export function useNow(active = true): number {
@@ -72,14 +73,17 @@ export function useSave() {
 
 /** 저장 상태 안내: 지금 상태 · 입력 보존 여부 · 다음 행동 */
 export function SaveNotice({ state, retry }: { state: SaveState; retry?: () => void }) {
-  if (state.kind === 'saving') return <div className="tip" role="status">저장 중… 화면을 닫지 말아 주세요.</div>;
+  if (state.kind === 'saving') return <div className="tip with-mascot" role="status"><Mascot pose="waiting" /><span>저장 중… 화면을 닫지 말아 주세요.</span></div>;
   if (state.kind === 'saved') return <div className="tip" role="status">✓ {state.text}</div>;
   if (state.kind === 'failed') {
     return (
-      <div className="tip warm" role="alert">
-        <strong>저장하지 못했어요</strong>
-        <p>{state.text} 입력한 내용은 이 화면에 남아 있어요.</p>
-        {retry && <button type="button" className="btn-secondary" onClick={retry}>다시 저장하기</button>}
+      <div className="tip warm with-mascot" role="alert">
+        <Mascot pose="help" />
+        <div>
+          <strong>저장하지 못했어요</strong>
+          <p>{state.text} 입력한 내용은 이 화면에 남아 있어요.</p>
+          {retry && <button type="button" className="btn-secondary" onClick={retry}>다시 저장하기</button>}
+        </div>
       </div>
     );
   }
@@ -161,14 +165,17 @@ export function OfflineNotice({ online, pending, onRetry, lastError }: { online:
   if (online && pending === 0 && !lastError) return null;
   return (
     <div className="status-bar">
-      <div className="tip warm" role="status">
-        <strong>{online ? (pending ? `아직 보내지 못한 기록 ${pending}개` : '서버에 연결하지 못했어요') : '인터넷 연결이 끊겼어요'}</strong>
-        <p>
-          {pending
-            ? '완료 표시는 이 기기에 임시로 남아 있어요. 부모님 확인과 자유시간은 연결된 뒤 확인해요.'
-            : lastError ?? '연결되면 다시 불러올게요.'}
-        </p>
-        <button type="button" className="btn-secondary" onClick={onRetry}>연결 다시 확인</button>
+      <div className="tip warm with-mascot" role="status">
+        <Mascot pose="waiting" />
+        <div>
+          <strong>{online ? (pending ? `아직 보내지 못한 기록 ${pending}개` : '서버에 연결하지 못했어요') : '인터넷 연결이 끊겼어요'}</strong>
+          <p>
+            {pending
+              ? '완료 표시는 이 기기에 임시로 남아 있어요. 부모님 확인과 자유시간은 연결된 뒤 확인해요.'
+              : lastError ?? '연결되면 다시 불러올게요.'}
+          </p>
+          <button type="button" className="btn-secondary" onClick={onRetry}>연결 다시 확인</button>
+        </div>
       </div>
     </div>
   );
