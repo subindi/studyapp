@@ -109,23 +109,26 @@ export function ProgressBar({ done, total, label = '필수 할 일' }: { done: n
   );
 }
 
-export function TaskRow({ task, detail, action, pending, current, handle, onKey, label }: {
+export function TaskRow({ task, detail, action, pending, current, handle, onKey, onOpen, label }: {
   task: Task;
   detail?: ReactNode;
   action?: ReactNode;
   pending?: boolean;
   current?: boolean;
-  /** 박스 전체를 손잡이로 (끌기) */
+  /** 아이콘을 손잡이로 (끌기). 상자의 나머지 부분은 스크롤 · 누르기용 */
   handle?: HandleProps;
+  /** 상자를 누르면 열기 */
+  onOpen?: () => void;
   /** 키보드로 같은 동작 (Enter · 방향키) */
   onKey?: (e: KeyboardEvent<HTMLDivElement>) => void;
   label?: string;
 }) {
   const done = task.status === 'done';
   return (
-    <div {...handle} tabIndex={handle ? 0 : undefined} role={handle ? 'button' : undefined} aria-label={label} onKeyDown={onKey}
-      className={`task${done ? ' done' : ''}${current ? ' current' : ''}${handle ? ` ${handle.className}` : ''}`}>
-      <span aria-hidden="true" className="emoji">{done ? '✓' : task.icon}</span>
+    <div tabIndex={onKey || onOpen ? 0 : undefined} role={onOpen ? 'button' : onKey ? 'group' : undefined} aria-label={label} onKeyDown={onKey}
+      onClick={onOpen} className={`task${done ? ' done' : ''}${current ? ' current' : ''}${onOpen ? ' clickable' : ''}`}>
+      <span aria-hidden="true" {...handle} onClick={handle ? (e) => e.stopPropagation() : undefined}
+        className={`emoji${handle ? ` ${handle.className}` : ''}`}>{done ? '✓' : task.icon}</span>
       <div className="copy">
         <strong>{task.title}</strong>
         <small>

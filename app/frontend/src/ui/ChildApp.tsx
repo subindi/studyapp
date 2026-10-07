@@ -213,11 +213,14 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
         </div>
       ) : (
         <>
-          <div className="row"><h3>{quest ? '오늘의 퀘스트' : '오늘의 할 일'}</h3><small>{tasks.filter(isCounted).length}개</small></div>
+          <div className="row">
+            <h3>{quest ? '오늘의 퀘스트' : '오늘의 할 일'} <small>{tasks.filter(isCounted).length}개</small></h3>
+            {me.level >= 2 && open.length > 1 && <button type="button" className="btn-small" onClick={() => go('plan')}>↕ 순서 바꾸기</button>}
+          </div>
           {open.length > 0 && !allRequiredDone && (
             <div ref={zone.zoneRef} className={`drop-zone${zone.dragging ? ' ready' : ''}${zone.dragging?.over ? ' over' : ''}`}>
               <strong>{zone.dragging?.over ? '놓으면 시작해요!' : '🎯 여기에 끌어다 놓으면 시작'}</strong>
-              <small>할 일 상자를 잡고 이 칸으로 끌어와요 · 톡 누르면 열려요</small>
+              <small>할 일 아이콘을 잡고 이 칸으로 끌어와요 · 상자를 누르면 열려요</small>
             </div>
           )}
           <div className="list">
@@ -232,7 +235,8 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
                   }
                 }}
                 detail={t.movedIn ? `${STATUS_LABEL[t.status]} · 어제에서 옮겨 옴` : undefined}
-                action={isCounted(t) ? <span className="card-hint" aria-hidden="true">{t.status === 'done' ? '보기' : '끌기 · 열기'}</span> : undefined} />
+                onOpen={isCounted(t) ? () => dropAction.current?.tap(t.id) : undefined}
+                action={isCounted(t) ? <span className="card-hint" aria-hidden="true">{t.status === 'done' ? '보기' : '열기'}</span> : undefined} />
             ))}
           </div>
         </>
@@ -491,7 +495,7 @@ function PlanPage({ view, busy, onBack, onSave }: {
       <button type="button" className="btn-back" onClick={onBack}>← 돌아가기</button>
       <div className="kicker">내가 고르는 순서</div>
       <h2>뭐부터 할까?</h2>
-      <p>할 일 상자를 잡고 위아래로 끌어 순서를 바꿔요.{me.level >= 3 && ' 예상시간도 내가 정해요.'}</p>
+      <p>할 일 아이콘을 잡고 위아래로 끌어 순서를 바꿔요.{me.level >= 3 && ' 예상시간도 내가 정해요.'}</p>
       <SortableList label="오늘 할 일 순서" items={items} onReorder={setOrder} renderItem={(t, handle) => {
         const i = order.indexOf(t.id);
         return (
