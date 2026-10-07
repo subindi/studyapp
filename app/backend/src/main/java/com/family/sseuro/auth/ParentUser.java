@@ -10,7 +10,7 @@ import java.time.Instant;
 
 /** 부모 계정 (로그인 주체) */
 @Entity
-@Table(name = "parent_user")
+@Table(name = "ss_parent_user")
 public class ParentUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

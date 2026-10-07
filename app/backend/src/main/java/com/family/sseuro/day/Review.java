@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 /** 하루 회고. mood: good(잘했어요) | different(조금 달랐어요) | hard(어려웠어요) */
 @Entity
-@Table(name = "review")
+@Table(name = "ss_review")
 public class Review {
     @Embeddable
     public record Key(@Column(name = "child_id") Long childId, @Column(name = "activity_day") LocalDate day) implements Serializable {}

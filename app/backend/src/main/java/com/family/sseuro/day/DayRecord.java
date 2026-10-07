@@ -15,7 +15,7 @@ import java.time.LocalDate;
  * 부모의 하루 승인(approvedAt)은 이용권 발급과 별개로 저장한다.
  */
 @Entity
-@Table(name = "day_record")
+@Table(name = "ss_day_record")
 public class DayRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

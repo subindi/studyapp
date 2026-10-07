@@ -5,9 +5,9 @@
 
 | 폴더 | 내용 |
 |---|---|
-| `frontend/` | React 19 + TypeScript + Vite (vitest). PWA(홈 화면에 추가), `nginx.conf`, `Dockerfile` |
-| `backend/` | Spring Boot 3.3 (Java 17) · JPA · Flyway · Spring Security · Spring Session JDBC. 로컬은 H2, 운영은 MySQL 8 |
-| `deploy/` | Docker Compose (web · api · mysql). 사용법은 `subindi/sudoku_pokemon` 의 `deploy/README.md` 와 같음 |
+| `frontend/` | React 19 + TypeScript + Vite (vitest). PWA(홈 화면에 추가) |
+| `backend/` | Spring Boot 3.3 (Java 17) · JPA · Flyway · Spring Security · Spring Session JDBC. 로컬은 H2, 운영은 서버 MySQL |
+| `deploy/server/` | 운영 서버 배포 (포켓 스도쿠와 같은 방식: Docker 없이 Spring Boot 하나로 화면 + API) |
 
 ## 정책 미정 항목 · 이번 구현에서 쓴 임시 기준
 
@@ -78,7 +78,35 @@ cd app/backend && ./gradlew bootRun     # 테스트: ./gradlew test
 cd app/frontend && npm install && npm run dev   # 테스트: npm test
 ```
 
-운영 배포: `cd app/deploy && cp .env.example .env && docker compose up -d --build` (HTTPS 앞단 설정은 sudoku_pokemon 배포 안내와 동일).
+## 운영 배포 (포켓 스도쿠와 같은 서버 · 같은 방식)
+
+```
+[브라우저] ──http:9091──> Spring Boot (API + 화면, ~/sseuro) ──> MySQL 127.0.0.1:3306 / ciat DB
+```
+
+- 서버 203.245.30.73, `ciat` 계정, sudo · Docker 없이. 포켓 스도쿠(9090, `~/poke-sudoku`) 옆에 **9091 · `~/sseuro`** 로 둔다.
+- Java 는 `~/sseuro/jre` 가 없으면 포켓 스도쿠의 `~/poke-sudoku/jre` (Temurin 17)를 함께 쓴다.
+- 메모리 1GB 서버에서 두 앱이 함께 돌므로 힙 192MB (`app.sh`).
+- DB 는 같은 `ciat` DB. 테이블 · 제약 이름은 모두 `ss_` 접두어, 세션 테이블은 `SS_SESSION`, Flyway 기록은 `sseuro_flyway_history` → 기존 TB_* · 포켓 스도쿠 테이블과 겹치지 않는다.
+
+처음 한 번 (서버에서):
+
+```bash
+mkdir -p ~/sseuro/config && nano ~/sseuro/config/application.yml   # app/deploy/server/application.yml.example 내용 + DB 비밀번호
+chmod 600 ~/sseuro/config/application.yml
+# 재부팅 자동 시작: crontab -e 에 추가
+@reboot /home/ciat/sseuro/app.sh start
+```
+
+업데이트 (개발 PC, `~/.ssh/poke_deploy` 키):
+
+```bash
+bash app/deploy/server/deploy.sh      # 빌드 · 테스트 → 올리기 → 재시작 → http://203.245.30.73:9091
+```
+
+되돌리기 (서버): `cd ~/sseuro && ./app.sh stop && mv app.jar.bak app.jar && rm -rf web && mv web.bak web && ./app.sh start`
+
+서버 명령: `~/sseuro/app.sh start | stop | restart | status | logs`
 
 ## 정책 검증 목록 → 자동 테스트
 

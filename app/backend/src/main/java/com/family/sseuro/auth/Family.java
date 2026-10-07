@@ -10,7 +10,7 @@ import java.time.Instant;
 
 /** 가족: 데이터 격리 단위. 모든 아이 · 할 일 조회는 로그인한 부모의 가족 안에서만 한다 */
 @Entity
-@Table(name = "family")
+@Table(name = "ss_family")
 public class Family {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

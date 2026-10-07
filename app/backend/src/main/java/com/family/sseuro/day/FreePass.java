@@ -16,7 +16,7 @@ import java.time.LocalDate;
  * 완료를 되돌려도 이미 발급된 이용권은 자동 회수하지 않는다.
  */
 @Entity
-@Table(name = "free_pass")
+@Table(name = "ss_free_pass")
 public class FreePass {
     public static final String READY = "ready", RUNNING = "running", PAUSED = "paused", USED = "used";
 

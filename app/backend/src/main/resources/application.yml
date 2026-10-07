@@ -17,7 +17,8 @@ spring:
     enabled: true
   session:
     jdbc:
-      initialize-schema: never   # SPRING_SESSION 테이블도 Flyway V1에 포함
+      initialize-schema: never   # 세션 테이블도 Flyway V1에 포함
+      table-name: SS_SESSION     # 같은 DB 의 포켓 스도쿠 SPRING_SESSION 과 겹치지 않게
     timeout: 30d
 
 server:

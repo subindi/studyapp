@@ -17,7 +17,7 @@ import java.time.LocalDate;
  * 타이머: elapsedSec(멈출 때까지 쌓인 초) + runningSince(진행 중이면 시작 시각). 시간은 서버 시계로만 센다.
  */
 @Entity
-@Table(name = "task")
+@Table(name = "ss_task")
 public class Task {
     public static final String READY = "ready", ACTIVE = "active", PAUSED = "paused", DONE = "done", WAIVED = "waived", MOVED = "moved";
 

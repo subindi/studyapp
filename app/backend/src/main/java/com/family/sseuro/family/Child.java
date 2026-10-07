@@ -14,7 +14,7 @@ import java.time.Instant;
  * uiStyle: quest(큰 카드 · 적은 글자) | planner(정돈된 목록 · 시간 계획) — 화면 모양일 뿐 권한과 무관
  */
 @Entity
-@Table(name = "child")
+@Table(name = "ss_child")
 public class Child {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

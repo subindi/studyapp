@@ -13,7 +13,7 @@ import java.time.Instant;
  * 오늘만 조정해도 원본은 바뀌지 않는다. daysMask: 월=1, 화=2, 수=4 … 일=64
  */
 @Entity
-@Table(name = "routine")
+@Table(name = "ss_routine")
 public class Routine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

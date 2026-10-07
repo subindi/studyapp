@@ -10,7 +10,7 @@ import java.time.Instant;
 
 /** 아이의 도움 요청. status: open | resolved (처리된 요청은 처리 상태로 보여 준다) */
 @Entity
-@Table(name = "help_request")
+@Table(name = "ss_help_request")
 public class HelpRequest {
     public static final String OPEN = "open", RESOLVED = "resolved";
 
