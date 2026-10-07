@@ -81,6 +81,8 @@ export interface Child {
   weekdayFreeMin: number;
   weekendFreeMin: number;
   approvalRequired: boolean;
+  /** 화면 테마: dragon(기본) · capybara · seal — 색 · 캐릭터만 바뀐다 */
+  theme?: string;
 }
 export interface FamilyView { name: string; today: string; children: Child[] }
 
@@ -141,6 +143,8 @@ export interface ChildSettings {
   weekdayFreeMin: number;
   weekendFreeMin: number;
   approvalRequired: boolean;
+  /** 없으면 서버가 지금 테마를 그대로 둔다 */
+  theme?: 'dragon' | 'capybara' | 'seal';
 }
 
 export interface DaySummary {

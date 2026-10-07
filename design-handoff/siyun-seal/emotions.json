@@ -1,0 +1,165 @@
+{
+  "image": "images/emotion-atlas.png",
+  "grid": {
+    "columns": 3,
+    "rows": 3
+  },
+  "width": 1254,
+  "height": 1254,
+  "format": "single transparent PNG atlas; no separate PNG files or animation frames",
+  "states": [
+    {
+      "rect": [
+        0,
+        0,
+        440,
+        455
+      ],
+      "backgroundSize": "285.000000% 275.604396%",
+      "aspectRatio": "440/455",
+      "id": "hello",
+      "label": "반가워!",
+      "trigger": "앱 진입·프로필 선택 후",
+      "pose": "반갑게 손 흔들기",
+      "row": 0,
+      "column": 0,
+      "backgroundPosition": "0.000000% 0.000000%"
+    },
+    {
+      "rect": [
+        440,
+        0,
+        410,
+        455
+      ],
+      "backgroundSize": "305.853659% 275.604396%",
+      "aspectRatio": "410/455",
+      "id": "well-done",
+      "label": "수고했어!",
+      "trigger": "학습 과정 종료·노력에 대한 피드백",
+      "pose": "작은 하트 안기",
+      "row": 0,
+      "column": 1,
+      "backgroundPosition": "52.132701% 0.000000%"
+    },
+    {
+      "rect": [
+        850,
+        0,
+        404,
+        455
+      ],
+      "backgroundSize": "310.396040% 275.604396%",
+      "aspectRatio": "404/455",
+      "id": "celebrate",
+      "label": "해냈어!",
+      "trigger": "기존 정책상 완료가 확정됐을 때",
+      "pose": "별과 함께 축하",
+      "row": 0,
+      "column": 2,
+      "backgroundPosition": "100.000000% 0.000000%"
+    },
+    {
+      "rect": [
+        0,
+        455,
+        440,
+        406
+      ],
+      "backgroundSize": "285.000000% 308.866995%",
+      "aspectRatio": "440/406",
+      "id": "encourage",
+      "label": "함께 해보자!",
+      "trigger": "학습 시작·도전 전",
+      "pose": "양손을 들어 응원",
+      "row": 1,
+      "column": 0,
+      "backgroundPosition": "0.000000% 53.655660%"
+    },
+    {
+      "rect": [
+        440,
+        455,
+        410,
+        406
+      ],
+      "backgroundSize": "305.853659% 308.866995%",
+      "aspectRatio": "410/406",
+      "id": "try-again",
+      "label": "괜찮아, 다시 해보자",
+      "trigger": "다시 확인할 입력·학습 실수",
+      "pose": "고개를 기울이며 물음표 보기",
+      "row": 1,
+      "column": 1,
+      "backgroundPosition": "52.132701% 53.655660%"
+    },
+    {
+      "rect": [
+        850,
+        455,
+        404,
+        406
+      ],
+      "backgroundSize": "310.396040% 308.866995%",
+      "aspectRatio": "404/406",
+      "id": "start-soon",
+      "label": "이제 시작해볼까?",
+      "trigger": "설정한 시작 시간 안내",
+      "pose": "작은 시계와 시작 제안",
+      "row": 1,
+      "column": 2,
+      "backgroundPosition": "100.000000% 53.655660%"
+    },
+    {
+      "rect": [
+        0,
+        861,
+        440,
+        393
+      ],
+      "backgroundSize": "285.000000% 319.083969%",
+      "aspectRatio": "440/393",
+      "id": "focus",
+      "label": "하나씩 차근차근",
+      "trigger": "학습 진행 중",
+      "pose": "책에 집중",
+      "row": 2,
+      "column": 0,
+      "backgroundPosition": "0.000000% 100.000000%"
+    },
+    {
+      "rect": [
+        440,
+        861,
+        410,
+        393
+      ],
+      "backgroundSize": "305.853659% 319.083969%",
+      "aspectRatio": "410/393",
+      "id": "rest",
+      "label": "잠깐 쉬어도 괜찮아",
+      "trigger": "쉬기 버튼·휴식 시간",
+      "pose": "쿠션에서 쉬기",
+      "row": 2,
+      "column": 1,
+      "backgroundPosition": "52.132701% 100.000000%"
+    },
+    {
+      "rect": [
+        850,
+        861,
+        404,
+        393
+      ],
+      "backgroundSize": "310.396040% 319.083969%",
+      "aspectRatio": "404/393",
+      "id": "sleep",
+      "label": "잘 자, 내일 또 만나",
+      "trigger": "하루 마무리",
+      "pose": "편안하게 잠들기",
+      "row": 2,
+      "column": 2,
+      "backgroundPosition": "100.000000% 100.000000%"
+    }
+  ]
+}

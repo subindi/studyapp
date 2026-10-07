@@ -12,6 +12,7 @@ import java.time.Instant;
  * 아이 프로필. level(자기주도 단계)은 나이와 별개로 부모가 아이와 함께 정한다.
  * Lv.1 같이 해요 · Lv.2 순서 선택 · Lv.3 순서와 예상시간 선택.
  * uiStyle: quest(큰 카드 · 적은 글자) | planner(정돈된 목록 · 시간 계획) — 화면 모양일 뿐 권한과 무관
+ * theme: dragon | capybara | seal — 색 · 캐릭터 · 배경만 바꾸는 화면 테마
  */
 @Entity
 @Table(name = "ss_child")
@@ -34,6 +35,9 @@ public class Child {
 
     @Column(name = "ui_style", nullable = false, length = 10)
     private String uiStyle;
+
+    @Column(nullable = false, length = 20)
+    private String theme = "dragon";
 
     @Column(name = "weekday_free_min", nullable = false)
     private int weekdayFreeMin;
@@ -96,6 +100,14 @@ public class Child {
 
     public String getUiStyle() {
         return uiStyle;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 
     public int getWeekdayFreeMin() {

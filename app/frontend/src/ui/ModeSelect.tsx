@@ -4,7 +4,7 @@ import type { FamilyView, Me } from '../sync/api';
 import { LEVELS } from '../policy';
 import { Header, SaveNotice, useSave } from './common';
 import { PinFields } from './Setup';
-import { SkinHero } from './skin';
+import { Mascot, SkinHero, themeOf } from './skin';
 
 /** 누가 시작할까요? — 아이 선택 · 부모 모드 (공용 태블릿에서도 아이마다 기록이 나뉜다) */
 export function ModeSelect({ family, onChild, onParent }: { family: FamilyView; onChild: (id: number) => void; onParent: () => void }) {
@@ -17,7 +17,7 @@ export function ModeSelect({ family, onChild, onParent }: { family: FamilyView; 
       {family.children.length === 0 && <p>아직 등록된 아이가 없어요. 부모 모드에서 아이를 등록해 주세요.</p>}
       {family.children.map((c) => (
         <button key={c.id} type="button" className="profile" onClick={() => onChild(c.id)}>
-          <span className="symbol" aria-hidden="true">{c.uiStyle === 'quest' ? '🌱' : '🌿'}</span>
+          <Mascot pose="welcome" theme={themeOf(c.theme)} />
           <span><strong>{c.name}</strong><small>{LEVELS[c.level]?.short ?? `Lv.${c.level}`}</small></span>
         </button>
       ))}

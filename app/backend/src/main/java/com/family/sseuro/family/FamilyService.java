@@ -75,5 +75,6 @@ public class FamilyService {
     private static void apply(Child child, ChildSettings s) {
         child.update(AuthService.clean(s.name(), 20, "아이 이름"), s.age(), s.level(), s.uiStyle(),
                 s.weekdayFreeMin(), s.weekendFreeMin(), s.approvalRequired());
+        if (s.theme() != null) child.setTheme(s.theme());
     }
 }

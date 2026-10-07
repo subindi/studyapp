@@ -1,0 +1,21 @@
+{
+  "theme": "siyun-seal",
+  "sha256": {
+    "CLAUDE.md": "077b25f35c3ba15f44172d6c1596dd4f6cc3b7f9d0b16368970f26ded7624cfc",
+    "CLAUDE_HANDOFF.ko.txt": "9c483d14666a1332892c8df0d66e6f4215a5d3f24551f76fc27ae707e9ef86e5",
+    "CLAUDE_START.ko.txt": "081ab632c2bc09ccccfbdc3c61288674b278e8c66500ce7008a0737cb9120c5b",
+    "DESIGN_GUIDE.ko.md": "8f0fea90d825d1193f0c5be19d256519b8c750e36a4406dc840abe45b08bc599",
+    "EMOTIONS_GUIDE.ko.md": "0857c8e5dba37a76e7a187b1cf5ffb05bcf94dfe5f0a4c1712aca9a62333563c",
+    "README.ko.md": "9a893d6430f515515ad97396860dda96fc358f6c67c4f7a9b4541dbf1344da53",
+    "assets-needed.json": "08db58f2a288066256892a32a953f9088d2a10452ef847753f76b9fc2f68ae12",
+    "emotions-preview.html": "afb5ccc3d3cd846385d15d71ed401849ee3aab6962696061fd0c868183992825",
+    "emotions.css": "ebaede479c4eb89c163292d1f74b875f1e2f403fee8d667a1174ccff4fea3445",
+    "emotions.json": "e119008d9411ee8330d318d251aa9bb432ba6a83db1f9303dc18e2da2f3cc3f3",
+    "images/approved-concept.png": "f5771b749615a512c02582c951dc36b0e42dd15aed53f7839c377ecd718e7835",
+    "images/emotion-atlas.png": "073c577909fdef448279897d49e7b668d017fa00521c7598c6efab19be1c11bb",
+    "preview.html": "6c051a5ba8a3b75e4c48ec171da4c116c32e09db4d6d3b2dddff44e7d2e7a200",
+    "skin-emotions-demo.html": "62372e8957e027fc32d51f4ddf9bb59ce50135ebf616556e8d759545202f7f10",
+    "theme.css": "fde6700e43b6511f0119666b56c9b6ce713d7e6897f5ac6f4549a2abb619ee63",
+    "tokens.json": "0fac4a82907f9d09de1c62da9989d320cc9d7e408f788424ae6590c8511ad99c"
+  }
+}

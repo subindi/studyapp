@@ -1,0 +1,51 @@
+{
+  "note": "정지 캐릭터는 emotion-atlas.png를 사용한다. 이 목록의 독립 파일 이름은 제작 제안이며 해당 파일이 별도로 존재하지 않는다.",
+  "assets": [
+    {
+      "filename": "character-idle.png",
+      "size": "1024x1024",
+      "transparent": true,
+      "use": "홈 기본 자세",
+      "status": "covered_by_emotion_atlas_for_static_display; standalone_file_not_provided",
+      "alternative": "images/emotion-atlas.png + emotions.css"
+    },
+    {
+      "filename": "character-wave.png",
+      "size": "1024x1024",
+      "transparent": true,
+      "use": "인사",
+      "status": "covered_by_emotion_atlas_for_static_display; standalone_file_not_provided",
+      "alternative": "images/emotion-atlas.png + emotions.css"
+    },
+    {
+      "filename": "character-celebrate.png",
+      "size": "1024x1024",
+      "transparent": true,
+      "use": "완료 축하",
+      "status": "covered_by_emotion_atlas_for_static_display; standalone_file_not_provided",
+      "alternative": "images/emotion-atlas.png + emotions.css"
+    },
+    {
+      "filename": "character-rest.png",
+      "size": "1024x1024",
+      "transparent": true,
+      "use": "휴식",
+      "status": "covered_by_emotion_atlas_for_static_display; standalone_file_not_provided",
+      "alternative": "images/emotion-atlas.png + emotions.css"
+    },
+    {
+      "filename": "hero-background.webp",
+      "size": "1600x1000",
+      "transparent": false,
+      "use": "인물·글자·UI 없는 배경",
+      "status": "to_be_produced"
+    },
+    {
+      "filename": "reward.png",
+      "size": "512x512",
+      "transparent": true,
+      "use": "조개 보상",
+      "status": "to_be_produced"
+    }
+  ]
+}

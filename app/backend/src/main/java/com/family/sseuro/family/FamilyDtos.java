@@ -14,10 +14,10 @@ public final class FamilyDtos {
     private FamilyDtos() {}
 
     public record ChildDto(long id, String name, int age, int level, String uiStyle,
-                           int weekdayFreeMin, int weekendFreeMin, boolean approvalRequired) {
+                           int weekdayFreeMin, int weekendFreeMin, boolean approvalRequired, String theme) {
         public static ChildDto of(Child c) {
             return new ChildDto(c.getId(), c.getName(), c.getAge(), c.getLevel(), c.getUiStyle(),
-                    c.getWeekdayFreeMin(), c.getWeekendFreeMin(), c.isApprovalRequired());
+                    c.getWeekdayFreeMin(), c.getWeekendFreeMin(), c.isApprovalRequired(), c.getTheme());
         }
     }
 
@@ -31,7 +31,9 @@ public final class FamilyDtos {
             @NotNull @Pattern(regexp = "quest|planner") String uiStyle,
             @NotNull @Min(0) @Max(180) Integer weekdayFreeMin,
             @NotNull @Min(0) @Max(180) Integer weekendFreeMin,
-            @NotNull Boolean approvalRequired) {}
+            @NotNull Boolean approvalRequired,
+            /** 없으면 지금 테마를 그대로 둔다 (예전 화면에서 보낸 요청) */
+            @Pattern(regexp = "dragon|capybara|seal") String theme) {}
 
     /** 아이 등록 (+ 첫 반복 할 일). requestId 가 같으면 이미 만든 아이를 돌려준다 */
     public record NewChildRequest(

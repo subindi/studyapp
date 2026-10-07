@@ -409,6 +409,21 @@ class ApiTest {
     }
 
     @Test
+    void 아이_테마는_기본_용이고_부모가_바꾸며_테마를_빼고_보내면_그대로다() throws Exception {
+        Cookie c = family();
+        long kid = child(c, "승윤", 2, true, true);
+        assertThat((String) JsonPath.read(today(c, kid), "$.child.theme")).isEqualTo("dragon");
+        String settings = "{\"name\":\"승윤\",\"age\":7,\"level\":2,\"uiStyle\":\"quest\",\"weekdayFreeMin\":40,\"weekendFreeMin\":60,\"approvalRequired\":true%s}";
+        mvc.perform(json(put("/api/parent/children/" + kid).cookie(c), settings.formatted(",\"theme\":\"capybara\"")))
+                .andExpect(jsonPath("$.theme").value("capybara"));
+        mvc.perform(json(put("/api/parent/children/" + kid).cookie(c), settings.formatted("")))
+                .andExpect(jsonPath("$.theme").value("capybara"));
+        mvc.perform(json(put("/api/parent/children/" + kid).cookie(c), settings.formatted(",\"theme\":\"pony\"")))
+                .andExpect(status().isBadRequest());
+        assertThat((String) JsonPath.read(body(get("/api/family").cookie(c)), "$.children[0].theme")).isEqualTo("capybara");
+    }
+
+    @Test
     void 이용권_발급_전_되돌리면_부모_확인을_다시_받는다() throws Exception {
         Cookie c = family();
         long kid = child(c, "승윤", 2, true, true);

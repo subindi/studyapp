@@ -1,0 +1,14 @@
+/* 시윤이와 물범의 작은 바다 — proposed implementation tokens */
+[data-theme="siyun-seal"] {
+  --skin-primary: #0874C9;
+  --skin-hover: #065EA4;
+  --skin-soft: #E5F5FF;
+  --skin-accent: #83DBCD;
+  --skin-background: #F4FBFF;
+  --skin-ink: #123A57;
+  --skin-muted: #526B7A;
+  --skin-border: #CBDDE8;
+  --skin-font-size: 18px;
+  --skin-button-height: 56px;
+  --skin-card-radius: 24px;
+}

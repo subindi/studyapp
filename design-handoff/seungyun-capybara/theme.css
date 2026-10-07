@@ -1,0 +1,14 @@
+/* 승윤이와 카피바라의 초록 쉼터 — proposed implementation tokens */
+[data-theme="seungyun-capybara"] {
+  --skin-primary: #24733C;
+  --skin-hover: #18572B;
+  --skin-soft: #EAF5E5;
+  --skin-accent: #DE403E;
+  --skin-background: #FAF9F0;
+  --skin-ink: #213F2B;
+  --skin-muted: #536B59;
+  --skin-border: #D4DFCE;
+  --skin-font-size: 20px;
+  --skin-button-height: 64px;
+  --skin-card-radius: 24px;
+}

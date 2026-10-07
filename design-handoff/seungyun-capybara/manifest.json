@@ -1,0 +1,21 @@
+{
+  "theme": "seungyun-capybara",
+  "sha256": {
+    "CLAUDE.md": "077b25f35c3ba15f44172d6c1596dd4f6cc3b7f9d0b16368970f26ded7624cfc",
+    "CLAUDE_HANDOFF.ko.txt": "d9fae459d77312c3c8fdaf809c64bd7773549d6a73fbc7e4a1c376fd3ba359c3",
+    "CLAUDE_START.ko.txt": "47a9776c846ae4116487283a90bf62c55258194d3c639ff67bf83542ef74951e",
+    "DESIGN_GUIDE.ko.md": "02d11b3a5c5a3319c4740bbade3fcfc3450ee5646bf076eb353908492b5ac489",
+    "EMOTIONS_GUIDE.ko.md": "0857c8e5dba37a76e7a187b1cf5ffb05bcf94dfe5f0a4c1712aca9a62333563c",
+    "README.ko.md": "ad8e4c99dc4684bb00365bda279b4956e9dcbffa69974a0b32285c5c2b3f759d",
+    "assets-needed.json": "5c64b9290b9f281845ab9d2245dd98a57ad1e35af78c47d5f1673d23b6424980",
+    "emotions-preview.html": "519e6f4d1df5ecd5d322376295396d63017b9524804937fbc7aeb0c9b1a720ac",
+    "emotions.css": "151fc567e55c41fd49e1aadc0abf00a6258b10738dd962e5d95de00c4e1751e2",
+    "emotions.json": "c4a8fc46d0165718f06bebbdea5a7ddc9e3124fda49a62df76a3e251bc5dd143",
+    "images/approved-concept.png": "fb2e706c198c7c61026ebe7d0a6b5d44d748faf4392894eea63c3e2f9b0a4781",
+    "images/emotion-atlas.png": "000b67cf68be90dc683a4d161bdd1b4d686502e7c51cc63f05e29143fa1a0e9d",
+    "preview.html": "323e79643bdb23a9c171bbd4ec5ad1e0ce189186150beeeabf291ebedc163934",
+    "skin-emotions-demo.html": "8adc3cc0ad33c562e957d9126aaef57f768cac20c52aba8322e22ff343a274fb",
+    "theme.css": "5495ebd86d0b239fd85879eaf313a1114e389eecd6a3e3aa88f8d9974e5c9ad7",
+    "tokens.json": "63fda8433b270249df26c5d80f8cba399d75ffc96158099937de513f8375b16f"
+  }
+}

@@ -1,0 +1,380 @@
+첨부한 “승윤이와 카피바라의 초록 쉼터” 디자인 패키지로 studyapp의 어린이 화면 스킨을 구현해줘.
+
+1. 기존 저장소 CLAUDE.md와 정책 문서를 먼저 읽고 DESIGN_GUIDE.ko.md, tokens.json, theme.css를 확인해줘.
+2. images/approved-concept.png를 시각적 기준으로 사용해줘. 승윤이의 인형 특징과 색감, 포근한 재질을 유지해줘.
+3. 홈과 미션 완료 화면을 공통 UI 컴포넌트로 구현하고 data-theme="seungyun-capybara"로 테마를 적용해줘. 프로필명은 하드코딩하지 말고 프로필 데이터에서 읽어줘.
+4. 시안의 전체 PNG를 화면 배경으로 깔지 말고 텍스트·버튼·미션 목록은 실제 접근 가능한 UI로 만들어줘.
+5. assets-needed.json은 미제작 목록이야. 정지 캐릭터는 emotion-atlas.png와 emotions.css를 사용하고, 없는 개별 캐릭터·배경 파일을 존재한다고 가정하지 말고, 필요한 자산과 현재 임시 적용 상태를 먼저 알려줘. 인형을 임의의 다른 캐릭터로 바꾸지 마.
+6. 기존 학습·승인·보상 정책과 데이터 저장 방식을 유지해줘. 조개/새싹 꾸미기는 시각적 제안이므로 기존 정책과 연결할 때 충돌 여부를 알려줘.
+7. 모바일 360~430px 및 태블릿에 대응하고, 정상·빈 목록·완료·저장 실패·승인 대기를 검수해줘.
+8. 변경 파일과 확인한 동작을 정리하고 미완성 자산은 명확하게 남겨줘.
+
+9. EMOTIONS_GUIDE.ko.md와 emotions.json을 읽고 9종 표정을 각 상황에 연결해줘. emotions-preview.html에서 상태별 표시를 확인해줘.
+
+
+# 승윤이와 카피바라의 초록 쉼터 · 디자인 인계 v1.0
+작성일: 2026-10-07 / 대상: 승윤이 7살 / 테마 ID: `seungyun-capybara`
+
+## 디자인 기준
+사용자가 승인한 시안은 `images/approved-concept.png`이다. 시안의 감정과 인형의 정체성을 보존하면서 실제 앱의 화면 크기에 맞춘다.
+
+## 캐릭터 고정 특징
+시나몬 갈색의 짧고 포근한 털, 통통하게 앉은 몸, 아주 짧은 팔다리, 작은 둥근 귀. 넓고 짙은 초콜릿색 둥근 사각형 주둥이, 주둥이 위쪽의 작고 느긋한 눈, 검정 자수 코와 세로 입선. 주둥이의 코 자수를 눈으로 오해하지 않는다. 목과 머리 뒤를 두르는 두꺼운 빨간 고리형 소품과 위로 보이는 작은 초록 잎을 유지한다. 소품을 긴 목도리로 바꾸지 않는다. 큰 반짝 눈·곰 코·크게 벌린 입을 추가하지 않는다.
+캐릭터를 다른 동물이나 일반 이모지로 교체하지 않는다. 인형의 소재 느낌을 유지한다. 장식용 고리와 제품 라벨은 제외한다.
+
+## 환경과 색
+햇빛이 드는 초록 강가 정원, 맑은 시냇물, 둥근 언덕, 작은 나무다리와 흰 꽃. 초록과 크림을 기본으로 하고 빨강은 인형 소품에 집중한다.
+주요 버튼 #24733C, 본문 #213F2B, 배경 #FAF9F0, 보조 카드 #EAF5E5. 전체 토큰은 tokens.json과 theme.css를 사용한다.
+
+## 홈과 완료 화면
+홈: “승윤아, 같이 해보자!” → 오늘의 미션 → 책 읽기, 숫자 놀이, 영어 듣기 → 큰 시작 버튼 → 우리 정원 꾸미기 → 하단 탭.
+완료: “승윤아, 멋지게 해냈어!” → 캐릭터 축하 → “우리 정원에 새싹이 자랐어!” → “정원 보러 가기” → 오늘의 기록.
+목록 문구는 예시이며 실제 부모가 설정한 미션 제목과 목표를 표시한다.
+7살용: 읽을 글을 줄이고 책·숫자·헤드폰 그림을 크게 사용한다. 그림과 텍스트를 함께 제공하고 카드를 통째로 누를 수 있게 한다. 한 화면의 주 행동은 하나로 유지한다.
+
+## 구현 원칙
+- 두 테마는 공통 컴포넌트와 동일한 데이터 구조를 사용한다. 테마는 색상·캐릭터·배경·문구·크기만 바꾼다.
+- 테마별 보상(조개/새싹)은 제안된 표현이다. 기존 프로젝트의 포인트·부모 승인·완료 정책을 임의로 변경하지 말고 시각 표현만 연결한다.
+- 학습 목표, 완료 여부, 보상 지급의 진실은 앱 데이터다. 이미지에 그려진 체크 표시나 숫자를 데이터로 사용하지 않는다.
+- 스킨을 바꿔도 학습 기록과 진척도를 보존한다. 두 아이의 기록과 설정은 각 프로필에 귀속한다.
+- 기존 저장소의 CLAUDE.md와 정책 문서를 먼저 확인한다. 충돌하는 기능 정책은 기존 문서를 우선하고 확인이 필요한 항목을 기록한다.
+
+## 화면 구조와 반응형
+- 모바일 360~430 CSS px 기준. 콘텐츠 좌우 여백 16~20px, 카드 사이 12~16px, 카드 안쪽 20px.
+- 상단은 앱명·프로필. 홈 히어로는 약 220~280px 내로 제한하고 오늘의 미션이 첫 화면에 드러나게 한다.
+- 미션은 세로 카드 목록. 완료 체크, 진행 중 강조, 대기 상태를 아이콘과 글자로 함께 구별한다. 색만으로 구별하지 않는다.
+- 카드 모서리 24px, 버튼 20px. 긴 목록은 페이지 전체 세로 스크롤. 내부 중첩 스크롤을 피한다.
+- 하단 탭은 오늘/테마 공간/내 친구. 고정 배치 시 safe-area와 콘텐츠 하단 여백을 확보한다.
+- 태블릿 768px 이상은 콘텐츠 최대 960px, 캐릭터 영역과 미션 영역을 2열로 배치할 수 있다. 모바일 구조를 단순 확대하지 않는다.
+- 한글은 시스템 글꼴 우선: Pretendard(설치돼 있을 때), Noto Sans KR(설치돼 있을 때), Apple SD Gothic Neo, Malgun Gothic, sans-serif. 유료 글꼴 구매를 전제하지 않는다.
+- 본문 명암비 4.5:1 이상, 큰 글자 3:1 이상을 실제 화면에서 확인한다. 텍스트는 그림 위보다 단색 카드 위에 둔다.
+- 키보드 포커스 표시, 버튼 이름, 장식 그림의 빈 대체텍스트, 의미 있는 그림의 한국어 대체텍스트를 제공한다.
+
+## 상태와 움직임
+- 처음 진입: 캐릭터가 짧게 인사. 미션 없음: 부모가 할 일을 추가할 수 있다는 짧은 안내.
+- 진행 중: 미션 하나를 강조. 완료: 기존 앱 정책상 완료가 확정된 뒤 축하 화면. 승인 대기 상태를 즉시 보상 지급으로 바꾸지 않는다.
+- 저장 중: 중복 제출 방지. 저장 실패: 미션을 잃지 않고 다시 시도. 보상 중복 지급 방지.
+- 권장 인사 동작 600~900ms, 완료 반응 1~2초. 끝없이 반복하는 점프나 반짝임은 피한다.
+- prefers-reduced-motion에서는 정지 이미지와 즉시 상태 전환을 사용한다. 자동 소리 없음.
+- 미접속·미완료 때문에 캐릭터가 아프거나 슬퍼지는 표현, 연속 출석 손실 압박은 넣지 않는다.
+
+## 에셋 인계 상태
+- images/approved-concept.png는 사용자가 좋아한 전체 시안 보드 원본이다. 홈과 완료 화면, 캐릭터 포즈가 한 장에 합쳐진 평면 PNG다.
+- 이 PNG는 디자인 기준이며 전체를 앱 배경으로 깔아 버튼만 덧씌우면 안 된다. 휴대폰 테두리, 글자, 카드가 그림에 포함돼 있다.
+- 투명 캐릭터 9종 아틀라스 PNG와 표시용 CSS는 추가 제공한다. 개별 캐릭터 PNG, 글자 없는 배경, 애니메이션 프레임, Figma 레이어 원본은 이 패키지에 없다. 이를 이미 제공된 것처럼 가정하지 않는다.
+- assets-needed.json에 제작할 자산을 명시했다. 아직 분리되지 않은 자산은 임시 상태임을 밝히고 기존 승인 시안으로 대체 재설계하지 않는다.
+- 외곽이 투명하지 않은 잘라낸 이미지를 투명 캐릭터 에셋이라고 취급하지 않는다.
+- theme.css와 tokens.json은 구현용 제안값이다. 생성 이미지에서 측정한 정확한 수치가 아니며 실기기 검증 후 조정할 수 있다.
+
+## 검수 기준
+- 원본 시안 옆에 화면을 놓고 캐릭터 얼굴·소품·팔레트의 일관성을 확인한다.
+- 360px, 390px, 430px, 768px에서 글자 잘림·가로 스크롤·하단 탭 겹침이 없어야 한다.
+- 긴 한글 미션명, 0개/1개/여러 개 미션, 모두 완료, 승인 대기, 저장 실패를 확인한다.
+- 테마 전환과 프로필 전환 후 기존 기록이 보존되는지 확인한다.
+- 실제 아이가 설명 없이 오늘 할 일을 찾고 시작할 수 있는지 확인한다.
+
+
+# 캐릭터 이모티콘 · 9종
+
+## 제공 형식
+images/emotion-atlas.png: 투명 배경의 정지 이모티콘 9종이 3×3으로 배열된 PNG 한 장.
+emotions.css: 이미지를 자르지 않고 각 칸만 표시하는 CSS.
+emotions.json: 실제 투명 여백에 맞춘 셀 좌표·표정 ID·문구·사용 상황. 생성 이미지의 배치가 완벽한 등분은 아니므로 JSON의 rect 또는 제공 CSS를 사용한다.
+emotions-preview.html: 9종을 개별로 표시하는 오프라인 미리보기.
+개별 PNG 9개, 벡터, 모션 프레임은 제공하지 않는다. 현재는 정지 표정 세트다.
+
+## 사용 예
+```html
+<link rel="stylesheet" href="emotions.css">
+<span class="skin-emotion" data-emotion="well-done" role="img" aria-label="수고했어!"></span>
+<p>오늘도 수고했어!</p>
+```
+실제 프로젝트에서는 CSS의 이미지 URL을 번들러/정적 파일 경로에 맞춘다. 메시지와 같은 뜻을 중복해서 읽게 하면 캐릭터는 aria-hidden="true"로 처리한다.
+CSS의 --emotion-size로 크기를 조절한다. 홈 144~192px, 완료 피드백 192~240px, 보조 안내 96~128px를 시작값으로 사용한다. 48px 이하 탭 아이콘은 디테일이 뭉개지므로 별도의 단순 아이콘 제작을 권한다.
+
+## 상태와 문구
+- `hello`: **반가워!** — 앱 진입·프로필 선택 후.
+- `well-done`: **수고했어!** — 학습 과정 종료·노력에 대한 피드백.
+- `celebrate`: **해냈어!** — 기존 정책상 완료가 확정됐을 때.
+- `encourage`: **함께 해보자!** — 학습 시작·도전 전.
+- `try-again`: **괜찮아, 다시 해보자** — 다시 확인할 입력·학습 실수.
+- `start-soon`: **이제 시작해볼까?** — 설정한 시작 시간 안내.
+- `focus`: **하나씩 차근차근** — 학습 진행 중.
+- `rest`: **잠깐 쉬어도 괜찮아** — 쉬기 버튼·휴식 시간.
+- `sleep`: **잘 자, 내일 또 만나** — 하루 마무리.
+
+## 적용 규칙
+- 홈 기본 인사 → hello, 시작 전 → encourage, 학습 중 → focus.
+- 노력 피드백 → well-done, 검증된 완료 → celebrate. 완료되지 않은 작업을 완료했다고 표시하지 않는다.
+- 실수 안내는 try-again과 구체적인 수정 방법을 함께 표시한다. 서버 오류를 아이의 실수처럼 표현하지 않는다.
+- start-soon은 설정된 학습 시작 시각 알림에만 사용한다. 반복 푸시·빨간 경고·죄책감 유발·불안한 표정으로 재촉하지 않는다. 미루기/닫기를 제공한다.
+- 실수 때 점수 차감이나 보상 회수 규칙을 새로 만들지 않는다.
+- rest/sleep은 정서적 안내일 뿐 기존 시간·보상 정책을 변경하지 않는다.
+- 애니메이션이 필요하면 CSS로 짧은 등장 정도만 사용하고 reduced-motion을 존중한다. 없는 애니메이션 프레임을 가정하지 않는다.
+- 앱 화면 배경과 이모티콘은 별개다. 이모티콘은 투명 배경으로 시윤이 바다 / 승윤이 정원 카드 안에서 사용할 수 있다.
+
+
+{
+  "themeId": "seungyun-capybara",
+  "title": "승윤이와 카피바라의 초록 쉼터",
+  "profile": {
+    "displayName": "승윤이",
+    "ageAtDesign": 7
+  },
+  "colors": {
+    "primary": "#24733C",
+    "hover": "#18572B",
+    "soft": "#EAF5E5",
+    "accent": "#DE403E",
+    "background": "#FAF9F0",
+    "ink": "#213F2B",
+    "muted": "#536B59",
+    "border": "#D4DFCE"
+  },
+  "layout": {
+    "bodyFontPx": 20,
+    "buttonMinHeightPx": 64,
+    "touchTargetMinPx": 56,
+    "cardRadiusPx": 24,
+    "spacingPx": [
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      32
+    ]
+  },
+  "copy": {
+    "greeting": "승윤아, 같이 해보자!",
+    "completion": "승윤아, 멋지게 해냈어!",
+    "reward": "우리 정원에 새싹이 자랐어!",
+    "tasks": [
+      "책 읽기",
+      "숫자 놀이",
+      "영어 듣기"
+    ]
+  },
+  "status": "proposed implementation tokens; approved visual reference is images/approved-concept.png"
+}
+
+
+{
+  "note": "정지 캐릭터는 emotion-atlas.png를 사용한다. 이 목록의 독립 파일 이름은 제작 제안이며 해당 파일이 별도로 존재하지 않는다.",
+  "assets": [
+    {
+      "filename": "character-idle.png",
+      "size": "1024x1024",
+      "transparent": true,
+      "use": "홈 기본 자세",
+      "status": "covered_by_emotion_atlas_for_static_display; standalone_file_not_provided",
+      "alternative": "images/emotion-atlas.png + emotions.css"
+    },
+    {
+      "filename": "character-wave.png",
+      "size": "1024x1024",
+      "transparent": true,
+      "use": "인사",
+      "status": "covered_by_emotion_atlas_for_static_display; standalone_file_not_provided",
+      "alternative": "images/emotion-atlas.png + emotions.css"
+    },
+    {
+      "filename": "character-celebrate.png",
+      "size": "1024x1024",
+      "transparent": true,
+      "use": "완료 축하",
+      "status": "covered_by_emotion_atlas_for_static_display; standalone_file_not_provided",
+      "alternative": "images/emotion-atlas.png + emotions.css"
+    },
+    {
+      "filename": "character-rest.png",
+      "size": "1024x1024",
+      "transparent": true,
+      "use": "휴식",
+      "status": "covered_by_emotion_atlas_for_static_display; standalone_file_not_provided",
+      "alternative": "images/emotion-atlas.png + emotions.css"
+    },
+    {
+      "filename": "hero-background.webp",
+      "size": "1600x1000",
+      "transparent": false,
+      "use": "인물·글자·UI 없는 배경",
+      "status": "to_be_produced"
+    },
+    {
+      "filename": "reward.png",
+      "size": "512x512",
+      "transparent": true,
+      "use": "새싹 보상",
+      "status": "to_be_produced"
+    }
+  ]
+}
+
+
+{
+  "image": "images/emotion-atlas.png",
+  "grid": {
+    "columns": 3,
+    "rows": 3
+  },
+  "width": 1254,
+  "height": 1254,
+  "format": "single transparent PNG atlas; no separate PNG files or animation frames",
+  "states": [
+    {
+      "rect": [
+        0,
+        0,
+        422,
+        420
+      ],
+      "backgroundSize": "297.156398% 298.571429%",
+      "aspectRatio": "422/420",
+      "id": "hello",
+      "label": "반가워!",
+      "trigger": "앱 진입·프로필 선택 후",
+      "pose": "반갑게 손 흔들기",
+      "row": 0,
+      "column": 0,
+      "backgroundPosition": "0.000000% 0.000000%"
+    },
+    {
+      "rect": [
+        422,
+        0,
+        411,
+        420
+      ],
+      "backgroundSize": "305.109489% 298.571429%",
+      "aspectRatio": "411/420",
+      "id": "well-done",
+      "label": "수고했어!",
+      "trigger": "학습 과정 종료·노력에 대한 피드백",
+      "pose": "작은 하트 안기",
+      "row": 0,
+      "column": 1,
+      "backgroundPosition": "50.059312% 0.000000%"
+    },
+    {
+      "rect": [
+        833,
+        0,
+        421,
+        420
+      ],
+      "backgroundSize": "297.862233% 298.571429%",
+      "aspectRatio": "421/420",
+      "id": "celebrate",
+      "label": "해냈어!",
+      "trigger": "기존 정책상 완료가 확정됐을 때",
+      "pose": "별과 함께 축하",
+      "row": 0,
+      "column": 2,
+      "backgroundPosition": "100.000000% 0.000000%"
+    },
+    {
+      "rect": [
+        0,
+        420,
+        422,
+        395
+      ],
+      "backgroundSize": "297.156398% 317.468354%",
+      "aspectRatio": "422/395",
+      "id": "encourage",
+      "label": "함께 해보자!",
+      "trigger": "학습 시작·도전 전",
+      "pose": "양손을 들어 응원",
+      "row": 1,
+      "column": 0,
+      "backgroundPosition": "0.000000% 48.894063%"
+    },
+    {
+      "rect": [
+        422,
+        420,
+        411,
+        395
+      ],
+      "backgroundSize": "305.109489% 317.468354%",
+      "aspectRatio": "411/395",
+      "id": "try-again",
+      "label": "괜찮아, 다시 해보자",
+      "trigger": "다시 확인할 입력·학습 실수",
+      "pose": "고개를 기울이며 물음표 보기",
+      "row": 1,
+      "column": 1,
+      "backgroundPosition": "50.059312% 48.894063%"
+    },
+    {
+      "rect": [
+        833,
+        420,
+        421,
+        395
+      ],
+      "backgroundSize": "297.862233% 317.468354%",
+      "aspectRatio": "421/395",
+      "id": "start-soon",
+      "label": "이제 시작해볼까?",
+      "trigger": "설정한 시작 시간 안내",
+      "pose": "작은 시계와 시작 제안",
+      "row": 1,
+      "column": 2,
+      "backgroundPosition": "100.000000% 48.894063%"
+    },
+    {
+      "rect": [
+        0,
+        815,
+        422,
+        439
+      ],
+      "backgroundSize": "297.156398% 285.649203%",
+      "aspectRatio": "422/439",
+      "id": "focus",
+      "label": "하나씩 차근차근",
+      "trigger": "학습 진행 중",
+      "pose": "책에 집중",
+      "row": 2,
+      "column": 0,
+      "backgroundPosition": "0.000000% 100.000000%"
+    },
+    {
+      "rect": [
+        422,
+        815,
+        411,
+        439
+      ],
+      "backgroundSize": "305.109489% 285.649203%",
+      "aspectRatio": "411/439",
+      "id": "rest",
+      "label": "잠깐 쉬어도 괜찮아",
+      "trigger": "쉬기 버튼·휴식 시간",
+      "pose": "쿠션에서 쉬기",
+      "row": 2,
+      "column": 1,
+      "backgroundPosition": "50.059312% 100.000000%"
+    },
+    {
+      "rect": [
+        833,
+        815,
+        421,
+        439
+      ],
+      "backgroundSize": "297.862233% 285.649203%",
+      "aspectRatio": "421/439",
+      "id": "sleep",
+      "label": "잘 자, 내일 또 만나",
+      "trigger": "하루 마무리",
+      "pose": "편안하게 잠들기",
+      "row": 2,
+      "column": 2,
+      "backgroundPosition": "100.000000% 100.000000%"
+    }
+  ]
+}

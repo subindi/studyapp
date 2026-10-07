@@ -235,6 +235,6 @@ public class DayService {
 
     static FamilyDtos.ChildDto childDto(Child c) {
         return new FamilyDtos.ChildDto(c.getId(), c.getName(), c.getAge(), c.getLevel(), c.getUiStyle(),
-                c.getWeekdayFreeMin(), c.getWeekendFreeMin(), c.isApprovalRequired());
+                c.getWeekdayFreeMin(), c.getWeekendFreeMin(), c.isApprovalRequired(), c.getTheme());
     }
 }

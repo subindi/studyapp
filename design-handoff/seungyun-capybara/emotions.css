@@ -1,0 +1,11 @@
+/* 정지 이모티콘 3×3 아틀라스. 각 셀을 background-position으로 표시. */
+.skin-emotion { display:inline-block; width:var(--emotion-size,144px); aspect-ratio:1; background-image:url("images/emotion-atlas.png"); background-size:300% 300%; background-repeat:no-repeat; flex-shrink:0; }
+.skin-emotion[data-emotion="hello"] { background-position:0.000000% 0.000000%; background-size:297.156398% 298.571429%; aspect-ratio:422/420; }
+.skin-emotion[data-emotion="well-done"] { background-position:50.059312% 0.000000%; background-size:305.109489% 298.571429%; aspect-ratio:411/420; }
+.skin-emotion[data-emotion="celebrate"] { background-position:100.000000% 0.000000%; background-size:297.862233% 298.571429%; aspect-ratio:421/420; }
+.skin-emotion[data-emotion="encourage"] { background-position:0.000000% 48.894063%; background-size:297.156398% 317.468354%; aspect-ratio:422/395; }
+.skin-emotion[data-emotion="try-again"] { background-position:50.059312% 48.894063%; background-size:305.109489% 317.468354%; aspect-ratio:411/395; }
+.skin-emotion[data-emotion="start-soon"] { background-position:100.000000% 48.894063%; background-size:297.862233% 317.468354%; aspect-ratio:421/395; }
+.skin-emotion[data-emotion="focus"] { background-position:0.000000% 100.000000%; background-size:297.156398% 285.649203%; aspect-ratio:422/439; }
+.skin-emotion[data-emotion="rest"] { background-position:50.059312% 100.000000%; background-size:305.109489% 285.649203%; aspect-ratio:411/439; }
+.skin-emotion[data-emotion="sleep"] { background-position:100.000000% 100.000000%; background-size:297.862233% 285.649203%; aspect-ratio:421/439; }

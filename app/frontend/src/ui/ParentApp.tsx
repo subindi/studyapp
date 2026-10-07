@@ -7,7 +7,7 @@ import {
 import { ErrorText, Header, ProgressBar, SaveNotice, TaskRow, useSave } from './common';
 import { ChildWizard, PinFields } from './Setup';
 import { PRESETS, dayBitOf } from '../presets';
-import { Mascot, SkinHero } from './skin';
+import { Mascot, SkinHero, THEMES, themeOf } from './skin';
 
 type Page =
   | { k: 'today' }
@@ -618,7 +618,7 @@ function SettingsPage({ guard, me, family, child, picker, notice, onSaved, onAdd
 }
 
 function ChildSettingsForm({ guard, child, onSaved }: { guard: Guard; child: Child; onSaved: (msg: string) => Promise<void> }) {
-  const [s, setS] = useState<ChildSettings>({ ...child });
+  const [s, setS] = useState<ChildSettings>({ ...child, theme: themeOf(child.theme) });
   const save = useSave();
   const submit = async (e?: FormEvent) => {
     e?.preventDefault();
@@ -647,6 +647,20 @@ function ChildSettingsForm({ guard, child, onSaved }: { guard: Guard; child: Chi
         <option value="quest">큰 퀘스트 카드</option>
         <option value="planner">차분한 플래너</option>
       </select>
+      <fieldset className="theme-pick">
+        <legend className="label">화면 테마</legend>
+        <div className="theme-options">
+          {THEMES.map((t) => (
+            <button key={t.id} type="button" className={`theme-option${s.theme === t.id ? ' selected' : ''}`} aria-pressed={s.theme === t.id}
+              onClick={() => setS({ ...s, theme: t.id })}>
+              <Mascot pose="welcome" theme={t.id} />
+              <strong>{t.name}</strong>
+              <small>{t.note}</small>
+            </button>
+          ))}
+        </div>
+        <p>색 · 캐릭터 · 배경만 바뀌어요. 기록과 설정은 그대로예요.</p>
+      </fieldset>
       <div className="pair">
         <div>
           <label className="label" htmlFor="weekday-time">평일 자유시간 (분)</label>

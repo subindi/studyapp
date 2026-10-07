@@ -278,3 +278,75 @@ textarea { resize: vertical; }
 .tip.with-mascot { display: flex; gap: 10px; align-items: flex-start; }
 .tip.with-mascot > .skin-mascot { width: 52px; flex: none; margin-top: -4px; }
 .tip.with-mascot > :not(.skin-mascot) { flex: 1; min-width: 0; }
+
+/* ---------------------------------------------------------------- 아이별 테마 (ui/skin.tsx · design-handoff/)
+ * <html data-theme="capybara|seal"> 은 아이 화면에서만 걸린다. 색 값은 각 패키지 tokens.json 의 제안값,
+ * 다크 모드 값은 패키지에 없어 같은 색 계열로 맞춘 임시값이다. */
+:root[data-theme=capybara] {
+  --bg: #faf9f0; --fg: #213f2b; --muted: #536b59; --panel: #fffffa; --line: #d4dfce; --soft: #eaf5e5;
+  --accent: #24733c; --primary: #24733c; --on-primary: #fff; --blue: #24733c; --blue-soft: #dcebd6; --focus: #24733c;
+  --warm: #fff1d6; --warn: #6e5528; --bubble: #fffffaf0; --bubble-line: #d4dfce; --bubble-ink: #213f2b;
+  --theme-accent: #de403e; --btn-h: 64px; --theme-text: 18px;
+}
+:root[data-theme=seal] {
+  --bg: #f4fbff; --fg: #123a57; --muted: #526b7a; --panel: #ffffff; --line: #cbdde8; --soft: #e5f5ff;
+  --accent: #0874c9; --primary: #0874c9; --on-primary: #fff; --blue: #0874c9; --blue-soft: #d6ebf8; --focus: #0874c9;
+  --warm: #fdf3dc; --warn: #6b5524; --bubble: #fffffff0; --bubble-line: #cbdde8; --bubble-ink: #123a57;
+  --theme-accent: #83dbcd; --btn-h: 56px; --theme-text: 17px;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-theme=capybara] {
+    --bg: #1d2a20; --fg: #eef5ea; --muted: #b5c7b4; --panel: #27382a; --line: #4a6049; --soft: #30482f;
+    --accent: #9fd6a6; --blue-soft: #2c4430; --focus: #9fd6a6; --warm: #46402a; --warn: #e6cd92;
+    --bubble: #27382af0; --bubble-line: #5c7656; --bubble-ink: #eef5ea;
+  }
+  :root[data-theme=seal] {
+    --bg: #12222e; --fg: #eaf4fb; --muted: #a9bfcc; --panel: #1b3040; --line: #35536a; --soft: #1f3d52;
+    --accent: #8fd0ff; --blue-soft: #1d3a4f; --focus: #8fd0ff; --warm: #3f3a26; --warn: #e6cd92;
+    --bubble: #1b3040f0; --bubble-line: #3f6580; --bubble-ink: #eaf4fb;
+  }
+}
+:root[data-theme] .btn-main { min-height: var(--btn-h); font-size: 18px; }
+:root[data-theme] .task strong { font-size: var(--theme-text); }
+:root[data-theme] .quest .task, :root[data-theme] .panel, :root[data-theme] .quest .hero { border-radius: 24px; }
+.skin-hero[data-set=capybara] { background-color: #e3f1dc; }
+.skin-hero[data-set=seal] { background-image: url('./skin/themes/sea.svg'); background-color: #dff2ff; }
+.skin-hero[data-set=seal].skin-focus, .skin-hero[data-set=capybara].skin-focus { background-color: var(--soft); }
+.skin-hero .skin-emotion { width: 150px; max-width: 46%; flex: none; }
+.skin-compact .skin-emotion { width: 80px; }
+@media (max-width: 380px) { .skin-hero .skin-emotion { width: 120px; } .skin-compact .skin-emotion { width: 66px; } }
+.skin-emotion { display: inline-block; width: 120px; aspect-ratio: 1; background-repeat: no-repeat; background-size: 300% 300%; flex-shrink: 0; }
+.tip.with-mascot > .skin-emotion { width: 52px; flex: none; }
+.skin-emotion[data-set=capybara] { background-image: url("./skin/themes/capybara-atlas.png"); }
+.skin-emotion[data-set=capybara][data-emotion=hello] { background-position: 0.000000% 0.000000%; background-size: 297.156398% 298.571429%; aspect-ratio: 422/420; }
+.skin-emotion[data-set=capybara][data-emotion=well-done] { background-position: 50.059312% 0.000000%; background-size: 305.109489% 298.571429%; aspect-ratio: 411/420; }
+.skin-emotion[data-set=capybara][data-emotion=celebrate] { background-position: 100.000000% 0.000000%; background-size: 297.862233% 298.571429%; aspect-ratio: 421/420; }
+.skin-emotion[data-set=capybara][data-emotion=encourage] { background-position: 0.000000% 48.894063%; background-size: 297.156398% 317.468354%; aspect-ratio: 422/395; }
+.skin-emotion[data-set=capybara][data-emotion=try-again] { background-position: 50.059312% 48.894063%; background-size: 305.109489% 317.468354%; aspect-ratio: 411/395; }
+.skin-emotion[data-set=capybara][data-emotion=start-soon] { background-position: 100.000000% 48.894063%; background-size: 297.862233% 317.468354%; aspect-ratio: 421/395; }
+.skin-emotion[data-set=capybara][data-emotion=focus] { background-position: 0.000000% 100.000000%; background-size: 297.156398% 285.649203%; aspect-ratio: 422/439; }
+.skin-emotion[data-set=capybara][data-emotion=rest] { background-position: 50.059312% 100.000000%; background-size: 305.109489% 285.649203%; aspect-ratio: 411/439; }
+.skin-emotion[data-set=capybara][data-emotion=sleep] { background-position: 100.000000% 100.000000%; background-size: 297.862233% 285.649203%; aspect-ratio: 421/439; }
+.skin-emotion[data-set=seal] { background-image: url("./skin/themes/seal-atlas.png"); }
+.skin-emotion[data-set=seal][data-emotion=hello] { background-position: 0.000000% 0.000000%; background-size: 285.000000% 275.604396%; aspect-ratio: 440/455; }
+.skin-emotion[data-set=seal][data-emotion=well-done] { background-position: 52.132701% 0.000000%; background-size: 305.853659% 275.604396%; aspect-ratio: 410/455; }
+.skin-emotion[data-set=seal][data-emotion=celebrate] { background-position: 100.000000% 0.000000%; background-size: 310.396040% 275.604396%; aspect-ratio: 404/455; }
+.skin-emotion[data-set=seal][data-emotion=encourage] { background-position: 0.000000% 53.655660%; background-size: 285.000000% 308.866995%; aspect-ratio: 440/406; }
+.skin-emotion[data-set=seal][data-emotion=try-again] { background-position: 52.132701% 53.655660%; background-size: 305.853659% 308.866995%; aspect-ratio: 410/406; }
+.skin-emotion[data-set=seal][data-emotion=start-soon] { background-position: 100.000000% 53.655660%; background-size: 310.396040% 308.866995%; aspect-ratio: 404/406; }
+.skin-emotion[data-set=seal][data-emotion=focus] { background-position: 0.000000% 100.000000%; background-size: 285.000000% 319.083969%; aspect-ratio: 440/393; }
+.skin-emotion[data-set=seal][data-emotion=rest] { background-position: 52.132701% 100.000000%; background-size: 305.853659% 319.083969%; aspect-ratio: 410/393; }
+.skin-emotion[data-set=seal][data-emotion=sleep] { background-position: 100.000000% 100.000000%; background-size: 310.396040% 319.083969%; aspect-ratio: 404/393; }
+
+/* 부모 설정: 화면 테마 고르기 · 아이 화면: 효과음 켜기/끄기 */
+.theme-pick { border: 0; padding: 0; margin: 0; min-width: 0; }
+.theme-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.theme-option { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; background: var(--panel); border: 2px solid var(--line); border-radius: 18px; text-align: center; min-width: 0; }
+.theme-option .skin-mascot, .theme-option .skin-emotion { width: 64px; }
+.theme-option strong { font-size: 13px; line-height: 1.3; word-break: keep-all; }
+.theme-option small { font-size: 11px; line-height: 1.3; word-break: keep-all; }
+.theme-option.selected { border-color: var(--accent); background: var(--soft); color: var(--fg); }
+.theme-option.selected small { color: var(--muted); }
+.sound-toggle { min-width: 44px; font-size: 18px; padding: 6px 10px; }
+.sound-toggle[aria-pressed='false'] { opacity: .7; }
+.profile .skin-mascot, .profile .skin-emotion { width: 52px; flex: none; }

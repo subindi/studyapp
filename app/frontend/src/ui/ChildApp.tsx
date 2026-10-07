@@ -8,7 +8,8 @@ import {
 } from '../policy';
 import { ErrorText, Header, OfflineNotice, ProgressBar, Ring, TaskRow, useNow, useOnline, useWide } from './common';
 import { DragGhost, SlideToConfirm, SortableList, useDragToZone } from './drag';
-import { SkinHero, type Scene } from './skin';
+import { SkinHero, themeOf, useThemeOnPage, type Scene } from './skin';
+import { useSound } from './sound';
 
 type Page = 'today' | 'plan' | 'focus' | 'help' | 'hint' | 'asked' | 'finish' | 'done' | 'waiting' | 'free' | 'review' | 'growth';
 
@@ -83,6 +84,9 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
   }, [readOutbox, refresh]);
 
   const view = useMemo(() => (raw ? withPending(raw, pendingIds) : null), [raw, pendingIds]);
+  const theme = themeOf((view?.child ?? child).theme);
+  useThemeOnPage(theme);
+  const sfx = useSound(child.id);
 
   /** 할 일을 '여기에 놓기' 칸에 끌어다 놓으면 바로 시작 · 아이콘을 톡 누르면 열기 (아래에서 채움) */
   const dropAction = useRef<{ drop: (id: number) => void; tap: (id: number) => void } | null>(null);
@@ -115,10 +119,15 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
     }
   }, [accept, readOutbox, refresh]);
 
+  const soundButton = (
+    <button type="button" className="btn-small sound-toggle" aria-pressed={sfx.on} aria-label={sfx.on ? '효과음 끄기' : '효과음 켜기'}
+      title={sfx.on ? '효과음 끄기' : '효과음 켜기'} onClick={sfx.toggle}>{sfx.on ? '🔊' : '🔇'}</button>
+  );
+
   if (!view) {
     return (
       <div className="app">
-        <Header badge={`${child.name} · ${child.age}세`}><button type="button" className="btn-small" onClick={onSwitch}>바꾸기</button></Header>
+        <Header badge={`${child.name} · ${child.age}세`}>{soundButton}<button type="button" className="btn-small" onClick={onSwitch}>바꾸기</button></Header>
         {loadError ? (
           <div className="tip warm" role="alert"><strong>오늘 할 일을 불러오지 못했어요</strong><p>{loadError}</p>
             <button type="button" className="btn-secondary" onClick={() => void refresh()}>다시 불러오기</button></div>
@@ -161,12 +170,14 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
       if (!t || !isCounted(t) || t.status === 'done') return;
       setActiveId(id);
       go('focus');
+      sfx.play('start');
       if (online && !t.running) void send(() => api.start(me.id, id));
     },
     tap: (id) => {
       const t = tasks.find((x) => x.id === id);
       if (!t || !isCounted(t)) return;
       setActiveId(id);
+      sfx.play('tap');
       go(t.status === 'done' ? 'done' : 'focus');
     },
   };
@@ -174,7 +185,10 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
 
   const ask = async (text: string) => {
     if (!active) return;
-    if (await send(() => api.help(me.id, active.id, text))) go('asked');
+    if (await send(() => api.help(me.id, active.id, text))) {
+      sfx.play('help');
+      go('asked');
+    }
   };
 
   // ---------------------------------------------------------------- 화면 조각
@@ -189,7 +203,11 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
   const nav = (
     <nav className="nav" aria-label="아이 메뉴">
       {([['today', '오늘'], ['free', '자유시간'], ['growth', '나의 성장']] as const).map(([p, label]) => (
-        <button key={p} type="button" aria-current={page === p ? 'page' : undefined} onClick={() => (page === 'focus' ? void leaveFocus(p) : go(p))}>{label}</button>
+        <button key={p} type="button" aria-current={page === p ? 'page' : undefined} onClick={() => {
+          sfx.play('tap');
+          if (page === 'focus') void leaveFocus(p);
+          else go(p);
+        }}>{label}</button>
       ))}
     </nav>
   );
@@ -291,7 +309,10 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
                 <span className="clock" role="timer" aria-live="off">{clock(left)}</span>
                 <small>{left === 0 ? '시간이 지나도 계속해도 돼요' : t.running ? '남은 예상시간' : elapsed ? '잠깐 쉬고 있어요' : '준비되면 시작해요'}</small>
               </Ring>
-              <button type="button" className="btn-blue" disabled={busyFlag || !online} onClick={() => void send(() => (t.running ? api.pause(me.id, t.id) : api.start(me.id, t.id)))}>
+              <button type="button" className="btn-blue" disabled={busyFlag || !online} onClick={() => {
+                sfx.play(t.running ? 'pause' : 'start');
+                void send(() => (t.running ? api.pause(me.id, t.id) : api.start(me.id, t.id)));
+              }}>
                 {t.running ? 'Ⅱ 잠깐 쉬기' : '▶ 시작하기'}
               </button>
               {!online && <p>타이머는 인터넷이 연결되어 있을 때 기록돼요.</p>}
@@ -396,8 +417,12 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
             <div className="panel"><h3>{active.title} · {active.amount}</h3><p>내가 정한 분량을 다 했나요?</p></div>
             <SlideToConfirm label="밀어서 다 했어요" disabled={busyFlag} onConfirm={async () => {
               const t = active;
+              const last = t.required && view.progress.done + 1 >= view.progress.total;
               const ok = await send(() => api.complete(me.id, t.id), () => outbox.add({ childId: me.id, kind: 'complete', taskId: t.id }));
-              if (ok) go('done');
+              if (ok) {
+                sfx.play(last ? 'allDone' : 'done');
+                go('done');
+              }
             }} />
             <button type="button" className="btn-secondary" onClick={() => go('focus')}>조금 더 할게요</button>
           </div>
@@ -455,7 +480,7 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
       body = <FreePage view={view} fetchedAt={fetchedAt} now={now} busy={busyFlag || pending} online={online}
         onGo={go} onIssueAndStart={async (activity) => {
           if (view.free.state === 'available' && !(await send(() => api.issuePass(me.id)))) return;
-          await send(() => api.startPass(me.id, activity));
+          if (await send(() => api.startPass(me.id, activity))) sfx.play('free');
         }} onToggle={() => void send(() => (view.free.running ? api.pausePass(me.id) : api.startPass(me.id, null)))} nav={nav} />;
       break;
     case 'review':
@@ -478,8 +503,8 @@ export function ChildApp({ child, onSwitch }: { child: Child; onSwitch: () => vo
 
   return (
     <div className={`app ${quest ? 'quest' : 'planner'}${split ? ' wide' : ''}`}>
-      <Header badge={`${me.name} · ${me.age}세`}><button type="button" className="btn-small" onClick={onSwitch}>바꾸기</button></Header>
-      <SkinHero scene={scene} compact={split || (!quest && page !== 'today')} />
+      <Header badge={`${me.name} · ${me.age}세`}>{soundButton}<button type="button" className="btn-small" onClick={onSwitch}>바꾸기</button></Header>
+      <SkinHero scene={scene} theme={theme} call={callName(me.name)} compact={split || (!quest && page !== 'today')} />
       <OfflineNotice online={online} pending={pendingCount} onRetry={() => void refresh()} lastError={loadError} />
       <ErrorText text={actionError} />
       {body}
