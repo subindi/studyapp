@@ -28,7 +28,7 @@ public class DayRecord {
     private LocalDate day;
 
     /** 반복 원본으로 그날 할 일을 만들었는지 (한 번만) */
-    @Column(nullable = false)
+    @Column(name = "routines_generated", nullable = false) // 'generated' 는 MySQL 8 예약어
     private boolean generated;
 
     /** 아이가 순서를 정했는지 */

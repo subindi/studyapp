@@ -15,7 +15,8 @@ echo "▶ 서버(API) 빌드"
 if [[ "${OS:-}" == "Windows_NT" ]]; then
   # 이 PC 는 JDK 소켓용 임시 경로가 짧아야 Gradle 이 동작한다
   export JAVA_TOOL_OPTIONS="-Djdk.net.unixdomain.tmpdir=D:/99_DEV/tmp -Djava.io.tmpdir=D:/99_DEV/tmp"
-  (cd backend && cmd //c "gradlew.bat test bootJar --console=plain")
+  # cmd 는 현재 폴더의 gradlew.bat 을 못 찾는 경우가 있어 전체 경로로 부른다
+  (cd backend && cmd //c "$(cygpath -w "$PWD")\\gradlew.bat test bootJar --console=plain")
 else
   (cd backend && ./gradlew test bootJar --console=plain)
 fi
@@ -40,5 +41,8 @@ ssh "${K[@]}" "$HOST" 'set -e; cd ~/sseuro
   ./app.sh stop
   mv app.jar app.jar.bak 2>/dev/null || true; mv app.jar.new app.jar
   rm -rf web.bak; mv web web.bak 2>/dev/null || true; mv web.new web
-  ./app.sh start'
+  ./app.sh start
+  # 재부팅 자동 시작 (없을 때만 한 줄 추가)
+  crontab -l 2>/dev/null | grep -q "/home/ciat/sseuro/app.sh" || \
+    (crontab -l 2>/dev/null; echo "@reboot sleep 40 && /home/ciat/sseuro/app.sh start >> /home/ciat/sseuro/logs/boot.log 2>&1") | crontab -'
 echo "✅ 완료: http://203.245.30.73:$PORT"

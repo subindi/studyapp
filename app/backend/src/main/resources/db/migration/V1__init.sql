@@ -71,7 +71,7 @@ CREATE TABLE ss_day_record (
     id           BIGINT      NOT NULL AUTO_INCREMENT,
     child_id     BIGINT      NOT NULL,
     activity_day DATE        NOT NULL,
-    generated    BOOLEAN     NOT NULL,
+    routines_generated BOOLEAN NOT NULL,
     planned      BOOLEAN     NOT NULL,
     approved_at  DATETIME(6),
     approved_by  BIGINT,

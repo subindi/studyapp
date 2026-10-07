@@ -37,7 +37,7 @@ interface DayRecordRepository extends JpaRepository<DayRecord, Long> {
 
     /** MySQL · H2(MySQL 모드) 공통. 이미 있으면 아무것도 하지 않는다 */
     @Modifying
-    @Query(value = "insert ignore into ss_day_record (child_id, activity_day, generated, planned) values (:childId, :day, false, false)", nativeQuery = true)
+    @Query(value = "insert ignore into ss_day_record (child_id, activity_day, routines_generated, planned) values (:childId, :day, false, false)", nativeQuery = true)
     void insertIgnore(long childId, LocalDate day);
 
     /** 그날의 변경을 한 줄로 세우는 행 잠금 */
