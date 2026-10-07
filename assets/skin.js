@@ -1,0 +1,4 @@
+window.SproutSkin={
+ map:{today:['welcome','우리 하나씩 해볼까?'],plan:['welcome','내가 고른 순서로 시작해요.'],focus:['focus','내 속도로 해도 괜찮아.'],help:['help','어려워도 괜찮아. 같이 찾아보자.'],hint:['help','작은 한 걸음부터 해봐요.'],asked:['waiting','함께 확인할 때까지 잠깐 쉬어요.'],'finish-check':['focus','내가 정한 분량을 확인해요.'],done:['celebrate','하나씩 해냈어!'],waiting:['waiting','다 해냈어! 확인을 기다려요.'],free:['rest','오늘의 약속 뒤에 즐거운 쉼.'],review:['help','오늘의 마음을 들려줘.'],growth:['celebrate','내 작은 시작이 쌓이고 있어요.'],empty:['rest','오늘은 쉬어가는 날이에요.'],undo:['help','다시 해봐도 괜찮아요.'],ended:['rest','오늘도 수고했어.'],saving:['waiting','내용을 안전하게 남겨요.']},
+ hero(key='today',options={}){let [pose,copy]=this.map[key]||this.map.today;if(options.copy)copy=options.copy;if(options.pose)pose=options.pose;return `<div class="skin-hero ${options.compact?'skin-compact':''} ${key==='focus'?'skin-focus':''}" aria-hidden="true"><span class="skin-mascot" data-pose="${pose}"></span><span class="skin-bubble">${copy}</span></div>`;}
+};

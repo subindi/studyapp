@@ -1,0 +1,49 @@
+{
+  "name": "스스로 · 아기 용",
+  "version": "1.0",
+  "colors": {
+    "background": "#FFFAF0",
+    "text": "#253D36",
+    "muted": "#64756B",
+    "card": "#FFFEF9",
+    "border": "#E6DFCA",
+    "soft": "#EAF2DF",
+    "primary": "#47754E",
+    "focus": "#2C689A",
+    "warm": "#FFF0CC"
+  },
+  "radius": {
+    "screen": 30,
+    "card": 22,
+    "button": 24,
+    "bubble": 20
+  },
+  "type": {
+    "body": 16,
+    "title": 27,
+    "hint": 14
+  },
+  "mascot": {
+    "file": "dragon-atlas.png",
+    "width": 1536,
+    "height": 1024,
+    "columns": 3,
+    "rows": 2,
+    "cell": 512,
+    "poses": [
+      "welcome",
+      "focus",
+      "celebrate",
+      "help",
+      "waiting",
+      "rest"
+    ]
+  },
+  "hero": {
+    "defaultMinHeight": 164,
+    "compactMinHeight": 90,
+    "mascot": 145,
+    "compactMascot": 78
+  },
+  "touchMinHeight": 44
+}
